@@ -232,6 +232,10 @@ function guardarEntrenamiento(dia) {
 }
 
 
+/* =========================
+   HISTORIAL
+========================= */
+
 function mostrarHistorial() {
 
     const contenido = document.getElementById("contenido");
@@ -245,63 +249,137 @@ function mostrarHistorial() {
 
         contenido.innerHTML = `
             <h2>Historial</h2>
-            <p>No hay entrenamientos guardados todavía.</p>
+
+            <p>
+                No hay entrenamientos guardados todavía.
+            </p>
         `;
 
         return;
     }
 
+    const diasGuardados = [];
+
+    historial.forEach((entrenamiento) => {
+
+        if (!diasGuardados.includes(entrenamiento.dia)) {
+            diasGuardados.push(entrenamiento.dia);
+        }
+    });
+
+    diasGuardados.sort((a, b) => a - b);
+
     let html = `
         <h2>Historial</h2>
+
+        <p>
+            Selecciona el día que quieres consultar:
+        </p>
+
+        <div style="margin-top: 20px;">
     `;
 
-    historial
-        .slice()
-        .reverse()
-        .forEach((entrenamiento) => {
+    diasGuardados.forEach((dia) => {
 
-            const fecha =
-                new Date(entrenamiento.fecha);
+        html += `
+            <button
+                class="historial-dia"
+                onclick="mostrarHistorialDia(${dia})">
 
-            const rutina =
-                rutinas[entrenamiento.dia];
+                Día ${dia} — ${rutinas[dia].nombre}
+
+            </button>
+        `;
+    });
+
+    html += `
+        </div>
+
+        <button
+            class="boton-comparar"
+            onclick="mostrarComparar()">
+
+            Comparar progreso
+
+        </button>
+    `;
+
+    contenido.innerHTML = html;
+}
+
+
+/* =========================
+   HISTORIAL DE UN DÍA
+========================= */
+
+function mostrarHistorialDia(dia) {
+
+    const contenido = document.getElementById("contenido");
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem("gymTrackerHistorial")
+        ) || [];
+
+    const entrenamientosDia =
+        historial.filter(
+            (entrenamiento) => entrenamiento.dia === dia
+        );
+
+    entrenamientosDia.sort(
+        (a, b) =>
+            new Date(b.fecha) - new Date(a.fecha)
+    );
+
+    let html = `
+        <button
+            class="volver"
+            onclick="mostrarHistorial()">
+
+            ← Volver al historial
+
+        </button>
+
+        <h2>
+            Día ${dia} — ${rutinas[dia].nombre}
+        </h2>
+    `;
+
+    entrenamientosDia.forEach((entrenamiento) => {
+
+        const fecha =
+            new Date(entrenamiento.fecha);
+
+        html += `
+            <div class="ejercicio">
+
+                <h3>
+                    ${fecha.toLocaleDateString("es-ES")}
+                    ${fecha.toLocaleTimeString("es-ES", {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    })}
+                </h3>
+        `;
+
+        entrenamiento.ejercicios.forEach((ejercicio) => {
 
             html += `
-                <div class="ejercicio">
+                <div style="margin-top: 20px;">
 
-                    <h3>
-                        Día ${entrenamiento.dia} — ${rutina.nombre}
-                    </h3>
-
-                    <p>
-                        ${fecha.toLocaleDateString("es-ES")}
-                        ${fecha.toLocaleTimeString("es-ES", {
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        })}
-                    </p>
+                    <strong>
+                        ${ejercicio.nombre}
+                    </strong>
             `;
 
-            entrenamiento.ejercicios.forEach((ejercicio) => {
+            ejercicio.series.forEach((serie, indice) => {
 
                 html += `
-                    <div style="margin-top: 20px;">
-                        <strong>${ejercicio.nombre}</strong>
-                `;
-
-                ejercicio.series.forEach((serie, indice) => {
-
-                    html += `
-                        <p style="margin-top: 8px;">
-                            Serie ${indice + 1}:
-                            ${serie.peso || "-"} kg ×
-                            ${serie.repeticiones || "-"} repeticiones
-                        </p>
-                    `;
-                });
-
-                html += `
-                    </div>
+                    <p style="margin-top: 8px;">
+                        Serie ${indice + 1}:
+                        ${serie.peso || "-"} kg ×
+                        ${serie.repeticiones || "-"} repeticiones
+                    </p>
                 `;
             });
 
@@ -310,20 +388,320 @@ function mostrarHistorial() {
             `;
         });
 
+        html += `
+            </div>
+        `;
+    });
+
     contenido.innerHTML = html;
 }
 
 
-/* Conectar el botón Historial con la función */
+/* =========================
+   COMPARAR
+========================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+function mostrarComparar() {
 
-    const botonHistorial =
-        document.getElementById("boton-historial");
+    const contenido = document.getElementById("contenido");
 
-    botonHistorial.addEventListener(
-        "click",
-        mostrarHistorial
+    const historial =
+        JSON.parse(
+            localStorage.getItem("gymTrackerHistorial")
+        ) || [];
+
+    if (historial.length === 0) {
+
+        contenido.innerHTML = `
+            <h2>Comparar progreso</h2>
+
+            <p>
+                Necesitas guardar al menos un entrenamiento.
+            </p>
+        `;
+
+        return;
+    }
+
+    const diasGuardados = [];
+
+    historial.forEach((entrenamiento) => {
+
+        if (!diasGuardados.includes(entrenamiento.dia)) {
+            diasGuardados.push(entrenamiento.dia);
+        }
+    });
+
+    diasGuardados.sort((a, b) => a - b);
+
+    let html = `
+        <button
+            class="volver"
+            onclick="mostrarHistorial()">
+
+            ← Volver al historial
+
+        </button>
+
+        <h2>Comparar progreso</h2>
+
+        <p>
+            Selecciona el día:
+        </p>
+
+        <select
+            id="selector-dia"
+            class="selector-comparar"
+            onchange="actualizarEjerciciosComparar()">
+
+    `;
+
+    diasGuardados.forEach((dia) => {
+
+        html += `
+            <option value="${dia}">
+                Día ${dia} — ${rutinas[dia].nombre}
+            </option>
+        `;
+    });
+
+    html += `
+        </select>
+
+        <p>
+            Selecciona el ejercicio:
+        </p>
+
+        <select
+            id="selector-ejercicio"
+            class="selector-comparar"
+            onchange="mostrarResultadoComparacion()">
+        </select>
+
+        <div id="resultado-comparacion"></div>
+    `;
+
+    contenido.innerHTML = html;
+
+    actualizarEjerciciosComparar();
+}
+
+
+/* =========================
+   ACTUALIZAR EJERCICIOS
+========================= */
+
+function actualizarEjerciciosComparar() {
+
+    const selectorDia =
+        document.getElementById("selector-dia");
+
+    const selectorEjercicio =
+        document.getElementById("selector-ejercicio");
+
+    const dia =
+        parseInt(selectorDia.value);
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem("gymTrackerHistorial")
+        ) || [];
+
+    const entrenamientosDia =
+        historial.filter(
+            (entrenamiento) =>
+                entrenamiento.dia === dia
+        );
+
+    const nombresEjercicios = [];
+
+    entrenamientosDia.forEach((entrenamiento) => {
+
+        entrenamiento.ejercicios.forEach((ejercicio) => {
+
+            if (!nombresEjercicios.includes(ejercicio.nombre)) {
+                nombresEjercicios.push(ejercicio.nombre);
+            }
+
+        });
+    });
+
+    selectorEjercicio.innerHTML = "";
+
+    nombresEjercicios.forEach((nombre) => {
+
+        const opcion =
+            document.createElement("option");
+
+        opcion.value = nombre;
+        opcion.textContent = nombre;
+
+        selectorEjercicio.appendChild(opcion);
+    });
+
+    mostrarResultadoComparacion();
+}
+
+
+/* =========================
+   RESULTADO COMPARACIÓN
+========================= */
+
+function mostrarResultadoComparacion() {
+
+    const selectorDia =
+        document.getElementById("selector-dia");
+
+    const selectorEjercicio =
+        document.getElementById("selector-ejercicio");
+
+    const resultado =
+        document.getElementById("resultado-comparacion");
+
+    if (!selectorDia || !selectorEjercicio || !resultado) {
+        return;
+    }
+
+    const dia =
+        parseInt(selectorDia.value);
+
+    const nombreEjercicio =
+        selectorEjercicio.value;
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem("gymTrackerHistorial")
+        ) || [];
+
+    let entrenamientos =
+        historial.filter(
+            (entrenamiento) =>
+                entrenamiento.dia === dia
+        );
+
+    entrenamientos.sort(
+        (a, b) =>
+            new Date(a.fecha) - new Date(b.fecha)
     );
 
-});
+    let html = "";
+
+    let pesoAnterior = null;
+
+    entrenamientos.forEach((entrenamiento) => {
+
+        const ejercicio =
+            entrenamiento.ejercicios.find(
+                (e) =>
+                    e.nombre === nombreEjercicio
+            );
+
+        if (!ejercicio) {
+            return;
+        }
+
+        const fecha =
+            new Date(entrenamiento.fecha);
+
+        html += `
+            <div class="comparacion">
+
+                <h3>
+                    ${fecha.toLocaleDateString("es-ES")}
+                    ${fecha.toLocaleTimeString("es-ES", {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    })}
+                </h3>
+        `;
+
+        ejercicio.series.forEach((serie, indice) => {
+
+            const pesoActual =
+                parseFloat(serie.peso);
+
+            let clasePeso = "mismo";
+
+            if (
+                pesoAnterior !== null &&
+                !isNaN(pesoActual)
+            ) {
+
+                if (pesoActual > pesoAnterior) {
+                    clasePeso = "subida";
+                }
+                else if (pesoActual < pesoAnterior) {
+                    clasePeso = "bajada";
+                }
+            }
+
+            html += `
+                <div class="comparacion-serie">
+
+                    Serie ${indice + 1}:
+
+                    <span class="${clasePeso}">
+                        ${serie.peso || "-"} kg
+                    </span>
+
+                    ×
+
+                    ${serie.repeticiones || "-"}
+                    repeticiones
+
+                </div>
+            `;
+        });
+
+        const pesosValidos =
+            ejercicio.series
+                .map((serie) =>
+                    parseFloat(serie.peso)
+                )
+                .filter((peso) =>
+                    !isNaN(peso)
+                );
+
+        if (pesosValidos.length > 0) {
+
+            pesoAnterior =
+                Math.max(...pesosValidos);
+        }
+
+        html += `
+            </div>
+        `;
+    });
+
+    if (html === "") {
+
+        html = `
+            <p>
+                No hay datos para comparar este ejercicio.
+            </p>
+        `;
+    }
+
+    resultado.innerHTML = html;
+}
+
+
+/* =========================
+   CONECTAR BOTÓN HISTORIAL
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const botonHistorial =
+            document.getElementById(
+                "boton-historial"
+            );
+
+        botonHistorial.addEventListener(
+            "click",
+            mostrarHistorial
+        );
+    }
+);
