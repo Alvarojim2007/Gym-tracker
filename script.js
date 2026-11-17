@@ -647,6 +647,14 @@ function mostrarHistorial() {
             Comparar progreso
 
         </button>
+
+        <button
+            class="boton-comparar"
+            onclick="mostrarGraficas()">
+
+            Ver gráficas de progreso
+
+        </button>
     `;
 
 
@@ -1369,12 +1377,6 @@ function mostrarResultadoComparacion() {
             }
 
 
-            /*
-             * Guardamos las series actuales
-             * para compararlas con las
-             * mismas series del próximo
-             * entrenamiento.
-             */
             seriesAnteriores =
                 ejercicio.series.map(
                     (serie) => ({
@@ -1453,6 +1455,1183 @@ function mostrarResultadoComparacion() {
 
     resultado.innerHTML =
         html;
+}
+
+
+/* =========================
+   GRÁFICAS DE PROGRESO
+========================= */
+
+function mostrarGraficas() {
+
+    const contenido =
+        document.getElementById(
+            "contenido"
+        );
+
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem(
+                "gymTrackerHistorial"
+            )
+        ) || [];
+
+
+    if (
+        historial.length === 0
+    ) {
+
+        contenido.innerHTML = `
+            <button
+                class="volver"
+                onclick="mostrarHistorial()">
+
+                ← Volver al historial
+
+            </button>
+
+            <h2>
+                Gráficas de progreso
+            </h2>
+
+            <p>
+                Necesitas guardar al menos
+                un entrenamiento.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    const diasGuardados = [];
+
+
+    historial.forEach(
+        (entrenamiento) => {
+
+            if (
+                !diasGuardados.includes(
+                    entrenamiento.dia
+                )
+            ) {
+
+                diasGuardados.push(
+                    entrenamiento.dia
+                );
+            }
+        }
+    );
+
+
+    diasGuardados.sort(
+        (a, b) => a - b
+    );
+
+
+    let html = `
+        <button
+            class="volver"
+            onclick="mostrarHistorial()">
+
+            ← Volver al historial
+
+        </button>
+
+        <h2>
+            Gráficas de progreso
+        </h2>
+
+        <p>
+            Selecciona el día:
+        </p>
+
+        <select
+            id="grafica-dia"
+            class="selector-comparar"
+            onchange="actualizarEjerciciosGrafica()">
+    `;
+
+
+    diasGuardados.forEach(
+        (dia) => {
+
+            html += `
+                <option value="${dia}">
+                    Día ${dia} —
+                    ${rutinas[dia].nombre}
+                </option>
+            `;
+        }
+    );
+
+
+    html += `
+        </select>
+
+        <p>
+            Selecciona el ejercicio:
+        </p>
+
+        <select
+            id="grafica-ejercicio"
+            class="selector-comparar"
+            onchange="dibujarGraficaProgreso()">
+        </select>
+
+        <p>
+            Selecciona qué quieres ver:
+        </p>
+
+        <select
+            id="grafica-metrica"
+            class="selector-comparar"
+            onchange="dibujarGraficaProgreso()">
+
+            <option value="peso">
+                Peso máximo
+            </option>
+
+            <option value="volumen">
+                Volumen total
+            </option>
+
+            <option value="repeticiones">
+                Repeticiones totales
+            </option>
+
+        </select>
+
+        <div
+            id="resumen-grafica"
+            style="
+                margin-top:20px;
+                display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+                gap:10px;
+            ">
+        </div>
+
+        <div
+            style="
+                width:100%;
+                margin-top:25px;
+                overflow:hidden;
+                background:#111;
+                border-radius:10px;
+                padding:15px;
+                box-sizing:border-box;
+            ">
+
+            <canvas
+                id="grafica-progreso"
+                width="900"
+                height="450"
+                style="
+                    width:100%;
+                    max-width:900px;
+                    height:auto;
+                    display:block;
+                    margin:auto;
+                ">
+            </canvas>
+
+        </div>
+    `;
+
+
+    contenido.innerHTML =
+        html;
+
+
+    actualizarEjerciciosGrafica();
+}
+
+
+/* =========================
+   ACTUALIZAR EJERCICIOS
+   DE LA GRÁFICA
+========================= */
+
+function actualizarEjerciciosGrafica() {
+
+    const selectorDia =
+        document.getElementById(
+            "grafica-dia"
+        );
+
+
+    const selectorEjercicio =
+        document.getElementById(
+            "grafica-ejercicio"
+        );
+
+
+    if (
+        !selectorDia ||
+        !selectorEjercicio
+    ) {
+        return;
+    }
+
+
+    const dia =
+        parseInt(
+            selectorDia.value
+        );
+
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem(
+                "gymTrackerHistorial"
+            )
+        ) || [];
+
+
+    const entrenamientosDia =
+        historial.filter(
+            (entrenamiento) =>
+                entrenamiento.dia === dia
+        );
+
+
+    const nombresEjercicios = [];
+
+
+    entrenamientosDia.forEach(
+        (entrenamiento) => {
+
+            entrenamiento.ejercicios.forEach(
+                (ejercicio) => {
+
+                    if (
+                        !nombresEjercicios.includes(
+                            ejercicio.nombre
+                        )
+                    ) {
+
+                        nombresEjercicios.push(
+                            ejercicio.nombre
+                        );
+                    }
+                }
+            );
+        }
+    );
+
+
+    selectorEjercicio.innerHTML =
+        "";
+
+
+    nombresEjercicios.forEach(
+        (nombre) => {
+
+            const opcion =
+                document.createElement(
+                    "option"
+                );
+
+
+            opcion.value =
+                nombre;
+
+
+            opcion.textContent =
+                nombre;
+
+
+            selectorEjercicio.appendChild(
+                opcion
+            );
+        }
+    );
+
+
+    dibujarGraficaProgreso();
+}
+
+
+/* =========================
+   OBTENER DATOS
+   DE LA GRÁFICA
+========================= */
+
+function obtenerDatosGrafica(
+    dia,
+    nombreEjercicio,
+    metrica
+) {
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem(
+                "gymTrackerHistorial"
+            )
+        ) || [];
+
+
+    let entrenamientos =
+        historial.filter(
+            (entrenamiento) =>
+                entrenamiento.dia === dia
+        );
+
+
+    entrenamientos.sort(
+        (a, b) =>
+            new Date(a.fecha) -
+            new Date(b.fecha)
+    );
+
+
+    const datos = [];
+
+
+    entrenamientos.forEach(
+        (entrenamiento) => {
+
+            const ejercicio =
+                entrenamiento.ejercicios.find(
+                    (e) =>
+                        e.nombre ===
+                        nombreEjercicio
+                );
+
+
+            if (!ejercicio) {
+                return;
+            }
+
+
+            let valor = 0;
+
+
+            if (
+                metrica === "peso"
+            ) {
+
+                const pesos =
+                    ejercicio.series
+                        .map(
+                            (serie) =>
+                                parseFloat(
+                                    serie.peso
+                                )
+                        )
+                        .filter(
+                            (peso) =>
+                                !isNaN(peso)
+                        );
+
+
+                if (
+                    pesos.length === 0
+                ) {
+                    return;
+                }
+
+
+                valor =
+                    Math.max(
+                        ...pesos
+                    );
+            }
+
+
+            else if (
+                metrica === "volumen"
+            ) {
+
+                ejercicio.series.forEach(
+                    (serie) => {
+
+                        const peso =
+                            parseFloat(
+                                serie.peso
+                            );
+
+                        const repeticiones =
+                            parseFloat(
+                                serie.repeticiones
+                            );
+
+
+                        if (
+                            !isNaN(peso) &&
+                            !isNaN(repeticiones)
+                        ) {
+
+                            valor +=
+                                peso *
+                                repeticiones;
+                        }
+                    }
+                );
+
+
+                if (
+                    valor === 0
+                ) {
+                    return;
+                }
+            }
+
+
+            else if (
+                metrica ===
+                "repeticiones"
+            ) {
+
+                ejercicio.series.forEach(
+                    (serie) => {
+
+                        const repeticiones =
+                            parseFloat(
+                                serie.repeticiones
+                            );
+
+
+                        if (
+                            !isNaN(
+                                repeticiones
+                            )
+                        ) {
+
+                            valor +=
+                                repeticiones;
+                        }
+                    }
+                );
+
+
+                if (
+                    valor === 0
+                ) {
+                    return;
+                }
+            }
+
+
+            datos.push({
+
+                fecha:
+                    entrenamiento.fecha,
+
+                valor:
+                    valor
+            });
+        }
+    );
+
+
+    return datos;
+}
+
+
+/* =========================
+   DIBUJAR GRÁFICA
+========================= */
+
+function dibujarGraficaProgreso() {
+
+    const selectorDia =
+        document.getElementById(
+            "grafica-dia"
+        );
+
+
+    const selectorEjercicio =
+        document.getElementById(
+            "grafica-ejercicio"
+        );
+
+
+    const selectorMetrica =
+        document.getElementById(
+            "grafica-metrica"
+        );
+
+
+    const canvas =
+        document.getElementById(
+            "grafica-progreso"
+        );
+
+
+    const resumen =
+        document.getElementById(
+            "resumen-grafica"
+        );
+
+
+    if (
+        !selectorDia ||
+        !selectorEjercicio ||
+        !selectorMetrica ||
+        !canvas
+    ) {
+        return;
+    }
+
+
+    const dia =
+        parseInt(
+            selectorDia.value
+        );
+
+
+    const nombreEjercicio =
+        selectorEjercicio.value;
+
+
+    const metrica =
+        selectorMetrica.value;
+
+
+    const datos =
+        obtenerDatosGrafica(
+            dia,
+            nombreEjercicio,
+            metrica
+        );
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    if (
+        datos.length === 0
+    ) {
+
+        resumen.innerHTML = `
+            <div>
+                No hay suficientes datos
+                para mostrar esta gráfica.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    let unidad = "";
+
+
+    if (
+        metrica === "peso"
+    ) {
+
+        unidad = "kg";
+    }
+
+    else if (
+        metrica === "volumen"
+    ) {
+
+        unidad = "kg";
+    }
+
+    else {
+
+        unidad = "reps";
+    }
+
+
+    const valores =
+        datos.map(
+            (dato) =>
+                dato.valor
+        );
+
+
+    const minimo =
+        Math.min(
+            ...valores
+        );
+
+
+    const maximo =
+        Math.max(
+            ...valores
+        );
+
+
+    const ultimo =
+        valores[
+            valores.length - 1
+        ];
+
+
+    const primero =
+        valores[0];
+
+
+    const mejor =
+        Math.max(
+            ...valores
+        );
+
+
+    let cambio = 0;
+
+
+    if (
+        primero !== 0
+    ) {
+
+        cambio =
+            (
+                (ultimo - primero) /
+                primero
+            ) * 100;
+    }
+
+
+    let tituloMetrica =
+        "";
+
+
+    if (
+        metrica === "peso"
+    ) {
+
+        tituloMetrica =
+            "Peso máximo";
+    }
+
+    else if (
+        metrica === "volumen"
+    ) {
+
+        tituloMetrica =
+            "Volumen total";
+    }
+
+    else {
+
+        tituloMetrica =
+            "Repeticiones totales";
+    }
+
+
+    resumen.innerHTML = `
+        <div
+            style="
+                background:#151515;
+                padding:15px;
+                border-radius:8px;
+                text-align:center;
+            ">
+
+            <strong>
+                Inicial
+            </strong>
+
+            <div
+                style="
+                    font-size:22px;
+                    margin-top:5px;
+                ">
+
+                ${primero}
+                ${unidad}
+
+            </div>
+
+        </div>
+
+        <div
+            style="
+                background:#151515;
+                padding:15px;
+                border-radius:8px;
+                text-align:center;
+            ">
+
+            <strong>
+                Actual
+            </strong>
+
+            <div
+                style="
+                    font-size:22px;
+                    margin-top:5px;
+                ">
+
+                ${ultimo}
+                ${unidad}
+
+            </div>
+
+        </div>
+
+        <div
+            style="
+                background:#151515;
+                padding:15px;
+                border-radius:8px;
+                text-align:center;
+            ">
+
+            <strong>
+                Mejor
+            </strong>
+
+            <div
+                style="
+                    font-size:22px;
+                    margin-top:5px;
+                ">
+
+                ${mejor}
+                ${unidad}
+
+            </div>
+
+        </div>
+
+        <div
+            style="
+                background:#151515;
+                padding:15px;
+                border-radius:8px;
+                text-align:center;
+            ">
+
+            <strong>
+                Cambio
+            </strong>
+
+            <div
+                style="
+                    font-size:22px;
+                    margin-top:5px;
+                ">
+
+                ${
+                    cambio > 0
+                        ? "+"
+                        : ""
+                }${cambio.toFixed(1)}%
+
+            </div>
+
+        </div>
+    `;
+
+
+    /* =========================
+       CONFIGURACIÓN DEL CANVAS
+    ========================= */
+
+    const ancho =
+        canvas.width;
+
+    const alto =
+        canvas.height;
+
+
+    const margenIzquierdo =
+        70;
+
+    const margenDerecho =
+        30;
+
+    const margenSuperior =
+        30;
+
+    const margenInferior =
+        70;
+
+
+    const anchoGrafica =
+        ancho -
+        margenIzquierdo -
+        margenDerecho;
+
+
+    const altoGrafica =
+        alto -
+        margenSuperior -
+        margenInferior;
+
+
+    /*
+     * Si todos los valores son iguales,
+     * añadimos un margen artificial para
+     * que la línea no quede pegada a un
+     * único punto.
+     */
+    let escalaMinima =
+        minimo;
+
+
+    let escalaMaxima =
+        maximo;
+
+
+    if (
+        escalaMinima ===
+        escalaMaxima
+    ) {
+
+        escalaMinima =
+            escalaMinima - 1;
+
+        escalaMaxima =
+            escalaMaxima + 1;
+    }
+
+
+    const rango =
+        escalaMaxima -
+        escalaMinima;
+
+
+    /* =========================
+       FONDO
+    ========================= */
+
+    ctx.fillStyle =
+        "#111";
+
+    ctx.fillRect(
+        0,
+        0,
+        ancho,
+        alto
+    );
+
+
+    /* =========================
+       TÍTULO
+    ========================= */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.font =
+        "bold 20px Arial";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.fillText(
+        `${tituloMetrica} — ${nombreEjercicio}`,
+        ancho / 2,
+        25
+    );
+
+
+    /* =========================
+       EJES
+    ========================= */
+
+    ctx.strokeStyle =
+        "#777";
+
+    ctx.lineWidth =
+        1;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        margenIzquierdo,
+        margenSuperior
+    );
+
+    ctx.lineTo(
+        margenIzquierdo,
+        alto -
+            margenInferior
+    );
+
+    ctx.lineTo(
+        ancho -
+            margenDerecho,
+        alto -
+            margenInferior
+    );
+
+    ctx.stroke();
+
+
+    /* =========================
+       LÍNEAS HORIZONTALES
+    ========================= */
+
+    const numeroLineas =
+        5;
+
+
+    ctx.font =
+        "12px Arial";
+
+    ctx.textAlign =
+        "right";
+
+
+    for (
+        let i = 0;
+        i <= numeroLineas;
+        i++
+    ) {
+
+        const porcentaje =
+            i /
+            numeroLineas;
+
+
+        const y =
+            margenSuperior +
+            altoGrafica *
+                porcentaje;
+
+
+        const valor =
+            escalaMaxima -
+            rango *
+                porcentaje;
+
+
+        ctx.strokeStyle =
+            "#333";
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            margenIzquierdo,
+            y
+        );
+
+        ctx.lineTo(
+            ancho -
+                margenDerecho,
+            y
+        );
+
+        ctx.stroke();
+
+
+        ctx.fillStyle =
+            "#aaa";
+
+        ctx.fillText(
+            valor.toFixed(1),
+            margenIzquierdo -
+                10,
+            y + 4
+        );
+    }
+
+
+    /* =========================
+       PUNTOS Y LÍNEA
+    ========================= */
+
+    const puntos = [];
+
+
+    datos.forEach(
+        (dato, indice) => {
+
+            let x;
+
+
+            if (
+                datos.length === 1
+            ) {
+
+                x =
+                    margenIzquierdo +
+                    anchoGrafica /
+                        2;
+
+            }
+            else {
+
+                x =
+                    margenIzquierdo +
+                    (
+                        indice /
+                        (
+                            datos.length -
+                            1
+                        )
+                    ) *
+                    anchoGrafica;
+            }
+
+
+            const y =
+                margenSuperior +
+                (
+                    (
+                        escalaMaxima -
+                        dato.valor
+                    ) /
+                    rango
+                ) *
+                altoGrafica;
+
+
+            puntos.push({
+                x: x,
+                y: y
+            });
+        }
+    );
+
+
+    ctx.strokeStyle =
+        "#4dabf7";
+
+    ctx.lineWidth =
+        3;
+
+    ctx.beginPath();
+
+
+    puntos.forEach(
+        (punto, indice) => {
+
+            if (
+                indice === 0
+            ) {
+
+                ctx.moveTo(
+                    punto.x,
+                    punto.y
+                );
+
+            }
+            else {
+
+                ctx.lineTo(
+                    punto.x,
+                    punto.y
+                );
+            }
+        }
+    );
+
+
+    ctx.stroke();
+
+
+    /* =========================
+       PUNTOS
+    ========================= */
+
+    puntos.forEach(
+        (punto, indice) => {
+
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                punto.x,
+                punto.y,
+                5,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+
+            ctx.fillStyle =
+                "#4dabf7";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                punto.x,
+                punto.y,
+                3,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+
+            /* =========================
+               FECHA
+            ========================= */
+
+            const fecha =
+                new Date(
+                    datos[indice]
+                        .fecha
+                );
+
+
+            const fechaTexto =
+                fecha.toLocaleDateString(
+                    "es-ES",
+                    {
+                        day: "2-digit",
+                        month: "2-digit"
+                    }
+                );
+
+
+            ctx.fillStyle =
+                "#aaa";
+
+            ctx.font =
+                "12px Arial";
+
+            ctx.textAlign =
+                "center";
+
+
+            ctx.fillText(
+                fechaTexto,
+                punto.x,
+                alto -
+                    margenInferior +
+                    25
+            );
+
+
+            /* =========================
+               VALOR
+            ========================= */
+
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.font =
+                "bold 12px Arial";
+
+
+            ctx.fillText(
+                `${dato.valor} ${unidad}`,
+                punto.x,
+                punto.y -
+                    10
+            );
+        }
+    );
 }
 
 
@@ -1705,13 +2884,6 @@ function anadirEjercicioEditor() {
         );
 
 
-    /*
-     * El primer editor-ejercicio
-     * corresponde al nombre de la
-     * rutina, por lo que contamos
-     * solamente los que contienen
-     * nombre de ejercicio.
-     */
     const indice =
         ejercicios.length;
 
@@ -1738,11 +2910,6 @@ function anadirEjercicioEditor() {
     );
 
 
-    /*
-     * El botón de guardar queda
-     * al final, así que lo movemos
-     * después del nuevo ejercicio.
-     */
     const botonAnadir =
         editor.querySelector(
             ".boton-anadir-ejercicio"
