@@ -204,16 +204,36 @@ function guardarEntrenamiento(dia) {
 
         for (let i = 0; i < pesos.length; i++) {
 
-            series.push({
-                peso: pesos[i].value,
-                repeticiones: repeticiones[i].value
-            });
+            const peso = pesos[i].value;
+            const repeticionesActuales = repeticiones[i].value;
+
+            /*
+             * Solo guardamos la serie si el usuario
+             * ha introducido peso o repeticiones.
+             */
+            if (
+                peso !== "" ||
+                repeticionesActuales !== ""
+            ) {
+
+                series.push({
+                    peso: peso,
+                    repeticiones: repeticionesActuales
+                });
+            }
         }
 
-        entrenamiento.ejercicios.push({
-            nombre: nombre,
-            series: series
-        });
+        /*
+         * Solo guardamos el ejercicio si tiene
+         * al menos una serie rellenada.
+         */
+        if (series.length > 0) {
+
+            entrenamiento.ejercicios.push({
+                nombre: nombre,
+                series: series
+            });
+        }
     });
 
     const historial =
@@ -589,15 +609,6 @@ function mostrarResultadoComparacion() {
     let mejorPeso = 0;
     let mejorVolumen = 0;
 
-    /*
-     * Guardamos las series del entrenamiento anterior.
-     *
-     * La posición del array representa el número de serie:
-     * posición 0 = serie 1
-     * posición 1 = serie 2
-     * posición 2 = serie 3
-     * etc.
-     */
     let seriesAnteriores = [];
 
     entrenamientos.forEach((entrenamiento) => {
@@ -640,11 +651,12 @@ function mostrarResultadoComparacion() {
             let clasePeso = "mismo";
 
             /*
-             * Comparamos esta serie con la MISMA serie
-             * del entrenamiento anterior.
+             * Comparamos cada serie con la misma
+             * serie del entrenamiento anterior.
              */
             if (
                 seriesAnteriores[indice] !== undefined &&
+                seriesAnteriores[indice] !== null &&
                 !isNaN(pesoActual) &&
                 !isNaN(seriesAnteriores[indice])
             ) {
@@ -704,9 +716,6 @@ function mostrarResultadoComparacion() {
             `;
         });
 
-        /*
-         * Actualizamos el mejor peso.
-         */
         const pesosValidos =
             ejercicio.series
                 .map((serie) =>
@@ -726,9 +735,6 @@ function mostrarResultadoComparacion() {
             }
         }
 
-        /*
-         * Actualizamos el mejor volumen.
-         */
         if (volumenEntrenamiento > mejorVolumen) {
             mejorVolumen = volumenEntrenamiento;
         }
@@ -743,10 +749,6 @@ function mostrarResultadoComparacion() {
             </div>
         `;
 
-        /*
-         * Guardamos los pesos de este entrenamiento
-         * para compararlos con el siguiente.
-         */
         seriesAnteriores =
             ejercicio.series.map((serie) => {
 
