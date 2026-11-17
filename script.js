@@ -205,11 +205,12 @@ function guardarEntrenamiento(dia) {
         for (let i = 0; i < pesos.length; i++) {
 
             const peso = pesos[i].value;
-            const repeticionesActuales = repeticiones[i].value;
+            const repeticionesActuales =
+                repeticiones[i].value;
 
             /*
-             * Solo guardamos la serie si el usuario
-             * ha introducido peso o repeticiones.
+             * Solo guardamos la serie si se ha
+             * introducido peso o repeticiones.
              */
             if (
                 peso !== "" ||
@@ -224,8 +225,7 @@ function guardarEntrenamiento(dia) {
         }
 
         /*
-         * Solo guardamos el ejercicio si tiene
-         * al menos una serie rellenada.
+         * No guardamos ejercicios completamente vacíos.
          */
         if (series.length > 0) {
 
@@ -609,6 +609,14 @@ function mostrarResultadoComparacion() {
     let mejorPeso = 0;
     let mejorVolumen = 0;
 
+    /*
+     * Guardamos las series del entrenamiento anterior.
+     *
+     * seriesAnteriores[0] = serie 1
+     * seriesAnteriores[1] = serie 2
+     * seriesAnteriores[2] = serie 3
+     * etc.
+     */
     let seriesAnteriores = [];
 
     entrenamientos.forEach((entrenamiento) => {
@@ -648,32 +656,69 @@ function mostrarResultadoComparacion() {
             const repeticionesActuales =
                 parseFloat(serie.repeticiones);
 
+            /*
+             * =========================
+             * COMPARACIÓN DEL PESO
+             * =========================
+             */
+
             let clasePeso = "mismo";
 
-            /*
-             * Comparamos cada serie con la misma
-             * serie del entrenamiento anterior.
-             */
+            const pesoAnterior =
+                seriesAnteriores[indice]?.peso;
+
             if (
-                seriesAnteriores[indice] !== undefined &&
-                seriesAnteriores[indice] !== null &&
+                pesoAnterior !== undefined &&
+                pesoAnterior !== null &&
                 !isNaN(pesoActual) &&
-                !isNaN(seriesAnteriores[indice])
+                !isNaN(pesoAnterior)
             ) {
 
-                if (
-                    pesoActual >
-                    seriesAnteriores[indice]
-                ) {
+                if (pesoActual > pesoAnterior) {
                     clasePeso = "subida";
                 }
-                else if (
-                    pesoActual <
-                    seriesAnteriores[indice]
-                ) {
+                else if (pesoActual < pesoAnterior) {
                     clasePeso = "bajada";
                 }
             }
+
+            /*
+             * =========================
+             * COMPARACIÓN DE REPETICIONES
+             * =========================
+             */
+
+            let claseRepeticiones = "mismo";
+
+            const repeticionesAnteriores =
+                seriesAnteriores[indice]?.repeticiones;
+
+            if (
+                repeticionesAnteriores !== undefined &&
+                repeticionesAnteriores !== null &&
+                !isNaN(repeticionesActuales) &&
+                !isNaN(repeticionesAnteriores)
+            ) {
+
+                if (
+                    repeticionesActuales >
+                    repeticionesAnteriores
+                ) {
+                    claseRepeticiones = "subida";
+                }
+                else if (
+                    repeticionesActuales <
+                    repeticionesAnteriores
+                ) {
+                    claseRepeticiones = "bajada";
+                }
+            }
+
+            /*
+             * =========================
+             * VOLUMEN DE LA SERIE
+             * =========================
+             */
 
             let volumenSerie = 0;
 
@@ -701,7 +746,10 @@ function mostrarResultadoComparacion() {
 
                     ×
 
-                    ${serie.repeticiones || "-"}
+                    <span class="${claseRepeticiones}">
+                        ${serie.repeticiones || "-"}
+                    </span>
+
                     repeticiones
 
                     ${
@@ -715,6 +763,12 @@ function mostrarResultadoComparacion() {
                 </div>
             `;
         });
+
+        /*
+         * =========================
+         * MEJOR PESO
+         * =========================
+         */
 
         const pesosValidos =
             ejercicio.series
@@ -735,6 +789,12 @@ function mostrarResultadoComparacion() {
             }
         }
 
+        /*
+         * =========================
+         * MEJOR VOLUMEN
+         * =========================
+         */
+
         if (volumenEntrenamiento > mejorVolumen) {
             mejorVolumen = volumenEntrenamiento;
         }
@@ -749,15 +809,30 @@ function mostrarResultadoComparacion() {
             </div>
         `;
 
+        /*
+         * Guardamos peso y repeticiones
+         * para compararlos con el siguiente
+         * entrenamiento.
+         */
         seriesAnteriores =
             ejercicio.series.map((serie) => {
 
                 const peso =
                     parseFloat(serie.peso);
 
-                return isNaN(peso)
-                    ? null
-                    : peso;
+                const repeticiones =
+                    parseFloat(serie.repeticiones);
+
+                return {
+                    peso: isNaN(peso)
+                        ? null
+                        : peso,
+
+                    repeticiones:
+                        isNaN(repeticiones)
+                            ? null
+                            : repeticiones
+                };
             });
     });
 
