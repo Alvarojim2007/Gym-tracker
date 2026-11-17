@@ -223,3 +223,79 @@ function guardarEntrenamiento(dia) {
 
     alert("Entrenamiento guardado correctamente.");
 }
+
+
+function mostrarHistorial() {
+
+    const contenido = document.getElementById("contenido");
+
+    const historial =
+        JSON.parse(localStorage.getItem("gymTrackerHistorial")) || [];
+
+    if (historial.length === 0) {
+
+        contenido.innerHTML = `
+            <h2>Historial</h2>
+            <p>No hay entrenamientos guardados todavía.</p>
+        `;
+
+        return;
+    }
+
+    let html = `
+        <h2>Historial</h2>
+    `;
+
+    historial
+        .slice()
+        .reverse()
+        .forEach((entrenamiento) => {
+
+            const fecha = new Date(entrenamiento.fecha);
+
+            html += `
+                <div class="ejercicio">
+
+                    <h3>
+                        Día ${entrenamiento.dia} — ${rutinas[entrenamiento.dia].nombre}
+                    </h3>
+
+                    <p>
+                        ${fecha.toLocaleDateString("es-ES")}
+                        ${fecha.toLocaleTimeString("es-ES", {
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        })}
+                    </p>
+            `;
+
+            entrenamiento.ejercicios.forEach((ejercicio) => {
+
+                html += `
+                    <div style="margin-top: 20px;">
+                        <strong>${ejercicio.nombre}</strong>
+                `;
+
+                ejercicio.series.forEach((serie, indice) => {
+
+                    html += `
+                        <p style="margin-top: 8px;">
+                            Serie ${indice + 1}:
+                            ${serie.peso || "-"} kg ×
+                            ${serie.repeticiones || "-"} repeticiones
+                        </p>
+                    `;
+                });
+
+                html += `
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+            `;
+        });
+
+    contenido.innerHTML = html;
+}
