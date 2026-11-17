@@ -60,10 +60,10 @@ main {
 }
 
 .ejercicio {
-    background: red !important;
-    border: 5px solid blue !important;
-    padding: 30px !important;
-    margin-bottom: 50px !important;
+    background: #292929;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
 }
 
 .ejercicio h3 {
