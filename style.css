@@ -430,6 +430,24 @@ main {
 
 
 /* =========================
+   EDICIÓN DE ENTRENAMIENTOS
+========================= */
+
+.series {
+    width: 100%;
+}
+
+.serie .peso,
+.serie .repeticiones {
+    min-width: 0;
+}
+
+.serie .boton-eliminar {
+    flex-shrink: 0;
+}
+
+
+/* =========================
    MÓVIL
 ========================= */
 
@@ -458,6 +476,11 @@ main {
 
     .serie input {
         width: calc(50% - 5px);
+    }
+
+    .serie .boton-eliminar {
+        width: 100%;
+        margin-top: 2px;
     }
 
     .editor-fila {
