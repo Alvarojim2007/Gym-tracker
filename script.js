@@ -83,9 +83,7 @@ function cargarRutinas() {
         localStorage.getItem("gymTrackerRutinas");
 
     if (guardadas) {
-
         return JSON.parse(guardadas);
-
     }
 
     return JSON.parse(
@@ -155,10 +153,6 @@ function mostrarDia(dia) {
                     </h3>
             `;
 
-
-            /* =========================
-               ÚLTIMO ENTRENAMIENTO
-            ========================= */
 
             if (ultimoEntrenamiento) {
 
@@ -342,15 +336,12 @@ function anadirSerie(indiceEjercicio) {
         );
 
     const numeroNuevaSerie =
-        contenedor.querySelectorAll(".serie")
-            .length + 1;
+        contenedor.querySelectorAll(".serie").length + 1;
 
 
     contenedor.insertAdjacentHTML(
         "beforeend",
-        crearSerieHTML(
-            numeroNuevaSerie
-        )
+        crearSerieHTML(numeroNuevaSerie)
     );
 }
 
@@ -381,7 +372,6 @@ function obtenerUltimoEntrenamientoEjercicio(
                 ) {
                     return false;
                 }
-
 
                 return entrenamiento.ejercicios.some(
                     (ejercicio) =>
@@ -473,9 +463,7 @@ function guardarEntrenamiento(dia) {
 
             const pesos =
                 ejercicioElemento
-                    .querySelectorAll(
-                        ".peso"
-                    );
+                    .querySelectorAll(".peso");
 
 
             const repeticiones =
@@ -534,9 +522,7 @@ function guardarEntrenamiento(dia) {
 
     localStorage.setItem(
         "gymTrackerHistorial",
-        JSON.stringify(
-            historial
-        )
+        JSON.stringify(historial)
     );
 
 
@@ -1191,8 +1177,7 @@ function mostrarResultadoComparacion() {
 
                         const repeticionesAnterior =
                             parseFloat(
-                                serieAnterior
-                                    .repeticiones
+                                serieAnterior.repeticiones
                             );
 
 
@@ -1423,8 +1408,7 @@ function mostrarResultadoComparacion() {
     else {
 
         html += `
-            <div
-                class="mejores-marcas">
+            <div class="mejores-marcas">
 
                 <h3>
                     Mejores marcas
@@ -1626,11 +1610,11 @@ function mostrarGraficas() {
 
             <canvas
                 id="grafica-progreso"
-                width="900"
-                height="450"
+                width="1000"
+                height="500"
                 style="
                     width:100%;
-                    max-width:900px;
+                    max-width:1000px;
                     height:auto;
                     display:block;
                     margin:auto;
@@ -1755,8 +1739,7 @@ function actualizarEjerciciosGrafica() {
 
 
 /* =========================
-   OBTENER DATOS
-   DE LA GRÁFICA
+   OBTENER DATOS GRÁFICA
 ========================= */
 
 function obtenerDatosGrafica(
@@ -1895,9 +1878,7 @@ function obtenerDatosGrafica(
 
 
                         if (
-                            !isNaN(
-                                repeticiones
-                            )
+                            !isNaN(repeticiones)
                         ) {
 
                             valor +=
@@ -1928,6 +1909,68 @@ function obtenerDatosGrafica(
 
 
     return datos;
+}
+
+
+/* =========================
+   CALCULAR ESCALA BONITA
+========================= */
+
+function calcularEscalaGrafica(
+    minimo,
+    maximo
+) {
+
+    let rango =
+        maximo - minimo;
+
+
+    if (
+        rango === 0
+    ) {
+
+        rango =
+            Math.max(
+                Math.abs(maximo) * 0.2,
+                1
+            );
+    }
+
+
+    const margen =
+        rango * 0.15;
+
+
+    let minimoEscala =
+        minimo - margen;
+
+
+    let maximoEscala =
+        maximo + margen;
+
+
+    /*
+     * Evitamos que el eje inferior
+     * quede en valores negativos
+     * cuando trabajamos con pesos,
+     * volumen o repeticiones.
+     */
+    if (
+        minimo >= 0 &&
+        minimoEscala < 0
+    ) {
+
+        minimoEscala = 0;
+    }
+
+
+    return {
+        minimo:
+            minimoEscala,
+
+        maximo:
+            maximoEscala
+    };
 }
 
 
@@ -2036,18 +2079,44 @@ function dibujarGraficaProgreso() {
     ) {
 
         unidad = "kg";
-    }
 
+    }
     else if (
         metrica === "volumen"
     ) {
 
         unidad = "kg";
-    }
 
+    }
     else {
 
         unidad = "reps";
+    }
+
+
+    let tituloMetrica = "";
+
+
+    if (
+        metrica === "peso"
+    ) {
+
+        tituloMetrica =
+            "Peso máximo";
+
+    }
+    else if (
+        metrica === "volumen"
+    ) {
+
+        tituloMetrica =
+            "Volumen total";
+
+    }
+    else {
+
+        tituloMetrica =
+            "Repeticiones totales";
     }
 
 
@@ -2101,34 +2170,12 @@ function dibujarGraficaProgreso() {
     }
 
 
-    let tituloMetrica =
-        "";
-
-
-    if (
-        metrica === "peso"
-    ) {
-
-        tituloMetrica =
-            "Peso máximo";
-    }
-
-    else if (
-        metrica === "volumen"
-    ) {
-
-        tituloMetrica =
-            "Volumen total";
-    }
-
-    else {
-
-        tituloMetrica =
-            "Repeticiones totales";
-    }
-
+    /* =========================
+       RESUMEN
+    ========================= */
 
     resumen.innerHTML = `
+
         <div
             style="
                 background:#151515;
@@ -2153,6 +2200,7 @@ function dibujarGraficaProgreso() {
             </div>
 
         </div>
+
 
         <div
             style="
@@ -2179,6 +2227,7 @@ function dibujarGraficaProgreso() {
 
         </div>
 
+
         <div
             style="
                 background:#151515;
@@ -2203,6 +2252,7 @@ function dibujarGraficaProgreso() {
             </div>
 
         </div>
+
 
         <div
             style="
@@ -2235,7 +2285,7 @@ function dibujarGraficaProgreso() {
 
 
     /* =========================
-       CONFIGURACIÓN DEL CANVAS
+       DIMENSIONES
     ========================= */
 
     const ancho =
@@ -2246,16 +2296,16 @@ function dibujarGraficaProgreso() {
 
 
     const margenIzquierdo =
-        70;
+        75;
 
     const margenDerecho =
-        30;
+        35;
 
     const margenSuperior =
-        30;
+        55;
 
     const margenInferior =
-        70;
+        80;
 
 
     const anchoGrafica =
@@ -2270,31 +2320,23 @@ function dibujarGraficaProgreso() {
         margenInferior;
 
 
-    /*
-     * Si todos los valores son iguales,
-     * añadimos un margen artificial para
-     * que la línea no quede pegada a un
-     * único punto.
-     */
-    let escalaMinima =
-        minimo;
+    /* =========================
+       ESCALA
+    ========================= */
+
+    const escala =
+        calcularEscalaGrafica(
+            minimo,
+            maximo
+        );
 
 
-    let escalaMaxima =
-        maximo;
+    const escalaMinima =
+        escala.minimo;
 
 
-    if (
-        escalaMinima ===
-        escalaMaxima
-    ) {
-
-        escalaMinima =
-            escalaMinima - 1;
-
-        escalaMaxima =
-            escalaMaxima + 1;
-    }
+    const escalaMaxima =
+        escala.maximo;
 
 
     const rango =
@@ -2333,7 +2375,7 @@ function dibujarGraficaProgreso() {
     ctx.fillText(
         `${tituloMetrica} — ${nombreEjercicio}`,
         ancho / 2,
-        25
+        28
     );
 
 
@@ -2342,7 +2384,7 @@ function dibujarGraficaProgreso() {
     ========================= */
 
     ctx.strokeStyle =
-        "#777";
+        "#666";
 
     ctx.lineWidth =
         1;
@@ -2405,12 +2447,14 @@ function dibujarGraficaProgreso() {
 
         const valor =
             escalaMaxima -
-            rango *
-                porcentaje;
+            (
+                rango *
+                porcentaje
+            );
 
 
         ctx.strokeStyle =
-            "#333";
+            "#292929";
 
         ctx.beginPath();
 
@@ -2429,10 +2473,31 @@ function dibujarGraficaProgreso() {
 
 
         ctx.fillStyle =
-            "#aaa";
+            "#999";
+
+
+        let textoValor;
+
+
+        if (
+            valor >= 100
+        ) {
+
+            textoValor =
+                Math.round(
+                    valor
+                );
+
+        }
+        else {
+
+            textoValor =
+                valor.toFixed(1);
+        }
+
 
         ctx.fillText(
-            valor.toFixed(1),
+            textoValor,
             margenIzquierdo -
                 10,
             y + 4
@@ -2441,7 +2506,7 @@ function dibujarGraficaProgreso() {
 
 
     /* =========================
-       PUNTOS Y LÍNEA
+       CALCULAR PUNTOS
     ========================= */
 
     const puntos = [];
@@ -2459,8 +2524,7 @@ function dibujarGraficaProgreso() {
 
                 x =
                     margenIzquierdo +
-                    anchoGrafica /
-                        2;
+                    anchoGrafica / 2;
 
             }
             else {
@@ -2497,6 +2561,10 @@ function dibujarGraficaProgreso() {
         }
     );
 
+
+    /* =========================
+       LÍNEA
+    ========================= */
 
     ctx.strokeStyle =
         "#4dabf7";
@@ -2535,11 +2603,13 @@ function dibujarGraficaProgreso() {
 
 
     /* =========================
-       PUNTOS
+       PUNTOS + ETIQUETAS
     ========================= */
 
     puntos.forEach(
         (punto, indice) => {
+
+            /* Punto exterior */
 
             ctx.fillStyle =
                 "#ffffff";
@@ -2549,13 +2619,15 @@ function dibujarGraficaProgreso() {
             ctx.arc(
                 punto.x,
                 punto.y,
-                5,
+                6,
                 0,
                 Math.PI * 2
             );
 
             ctx.fill();
 
+
+            /* Punto interior */
 
             ctx.fillStyle =
                 "#4dabf7";
@@ -2565,7 +2637,7 @@ function dibujarGraficaProgreso() {
             ctx.arc(
                 punto.x,
                 punto.y,
-                3,
+                4,
                 0,
                 Math.PI * 2
             );
@@ -2574,13 +2646,33 @@ function dibujarGraficaProgreso() {
 
 
             /* =========================
+               VALOR DEL PUNTO
+            ========================= */
+
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.font =
+                "bold 12px Arial";
+
+            ctx.textAlign =
+                "center";
+
+
+            ctx.fillText(
+                `${datos[indice].valor} ${unidad}`,
+                punto.x,
+                punto.y - 12
+            );
+
+
+            /* =========================
                FECHA
             ========================= */
 
             const fecha =
                 new Date(
-                    datos[indice]
-                        .fecha
+                    datos[indice].fecha
                 );
 
 
@@ -2595,13 +2687,10 @@ function dibujarGraficaProgreso() {
 
 
             ctx.fillStyle =
-                "#aaa";
+                "#999";
 
             ctx.font =
                 "12px Arial";
-
-            ctx.textAlign =
-                "center";
 
 
             ctx.fillText(
@@ -2611,26 +2700,32 @@ function dibujarGraficaProgreso() {
                     margenInferior +
                     25
             );
-
-
-            /* =========================
-               VALOR
-            ========================= */
-
-            ctx.fillStyle =
-                "#ffffff";
-
-            ctx.font =
-                "bold 12px Arial";
-
-
-            ctx.fillText(
-                `${dato.valor} ${unidad}`,
-                punto.x,
-                punto.y -
-                    10
-            );
         }
+    );
+
+
+    /* =========================
+       NÚMERO DE ENTRENAMIENTOS
+    ========================= */
+
+    ctx.fillStyle =
+        "#777";
+
+    ctx.font =
+        "12px Arial";
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.fillText(
+        `${datos.length} entrenamiento${
+            datos.length === 1
+                ? ""
+                : "s"
+        }`,
+        ancho / 2,
+        alto - 15
     );
 }
 
@@ -2908,24 +3003,6 @@ function anadirEjercicioEditor() {
             indice
         )
     );
-
-
-    const botonAnadir =
-        editor.querySelector(
-            ".boton-anadir-ejercicio"
-        );
-
-
-    const botonGuardar =
-        editor.querySelector(
-            ".boton-guardar-rutina"
-        );
-
-
-    editor.insertBefore(
-        botonAnadir,
-        botonGuardar
-    );
 }
 
 
@@ -3100,9 +3177,7 @@ function guardarRutinaEditada() {
 
     localStorage.setItem(
         "gymTrackerRutinas",
-        JSON.stringify(
-            rutinas
-        )
+        JSON.stringify(rutinas)
     );
 
 
