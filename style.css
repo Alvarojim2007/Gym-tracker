@@ -53,6 +53,14 @@ main {
     background: #383838;
 }
 
+#dias button:nth-last-child(2) {
+    background: #444;
+}
+
+#dias button:nth-last-child(2):hover {
+    background: #555;
+}
+
 #dias button:last-child {
     background: #444;
 }
@@ -75,6 +83,11 @@ main {
     color: #bbb;
     margin-top: 8px;
 }
+
+
+/* =========================
+   EJERCICIOS
+========================= */
 
 .ejercicio {
     background: #292929;
@@ -141,6 +154,37 @@ main {
 
 
 /* =========================
+   ÚLTIMO ENTRENAMIENTO
+========================= */
+
+.ultimo-entrenamiento {
+    background: #202020;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 18px;
+}
+
+.ultimo-entrenamiento-titulo {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.ultimo-serie {
+    display: flex;
+    gap: 15px;
+    margin-top: 7px;
+    color: #ddd;
+}
+
+.ultimo-serie span:first-child {
+    width: 65px;
+    color: #aaa;
+}
+
+
+/* =========================
    HISTORIAL
 ========================= */
 
@@ -163,7 +207,7 @@ main {
 
 
 /* =========================
-   BOTÓN COMPARAR
+   COMPARAR
 ========================= */
 
 .boton-comparar {
@@ -182,11 +226,6 @@ main {
     background: #555;
 }
 
-
-/* =========================
-   SELECTORES
-========================= */
-
 .selector-comparar {
     width: 100%;
     padding: 12px;
@@ -198,11 +237,6 @@ main {
     font-size: 15px;
 }
 
-
-/* =========================
-   COMPARACIÓN
-========================= */
-
 .comparacion {
     background: #292929;
     border-radius: 12px;
@@ -211,22 +245,21 @@ main {
 }
 
 .comparacion h3 {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .comparacion-serie {
-    padding: 12px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #444;
-    line-height: 1.6;
 }
 
-.comparacion-serie:last-of-type {
+.comparacion-serie:last-child {
     border-bottom: none;
 }
 
 
 /* =========================
-   PROGRESO
+   COLORES PROGRESO
 ========================= */
 
 .subida {
@@ -243,6 +276,11 @@ main {
     color: #bbb !important;
 }
 
+
+/* =========================
+   VOLUMEN
+========================= */
+
 .volumen {
     color: #aaa;
     margin-left: 5px;
@@ -250,13 +288,9 @@ main {
 
 .volumen-entrenamiento {
     margin-top: 15px;
-    padding-top: 15px;
+    padding-top: 12px;
     border-top: 1px solid #444;
     color: #bbb;
-}
-
-.volumen-entrenamiento strong {
-    color: white;
 }
 
 
@@ -268,7 +302,7 @@ main {
     background: #292929;
     border-radius: 12px;
     padding: 20px;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .mejores-marcas h3 {
@@ -276,16 +310,12 @@ main {
 }
 
 .mejores-marcas p {
-    margin-bottom: 10px;
-}
-
-.mejores-marcas strong {
-    color: #4ade80;
+    margin-bottom: 8px;
 }
 
 
 /* =========================
-   BOTÓN VOLVER
+   VOLVER
 ========================= */
 
 .volver {
@@ -302,6 +332,106 @@ main {
     background: #444;
 }
 
+
+/* =========================
+   EDITOR DE RUTINAS
+========================= */
+
+.editor-dia {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #555;
+    border-radius: 7px;
+    background: #111;
+    color: white;
+    font-size: 15px;
+}
+
+.editor-ejercicio {
+    background: #292929;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.editor-fila {
+    display: grid;
+    grid-template-columns: 1fr 100px auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.editor-fila input {
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #111;
+    color: white;
+    width: 100%;
+}
+
+.editor-fila label {
+    color: #bbb;
+    font-size: 14px;
+}
+
+.editor-opcional {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    color: #bbb;
+}
+
+.boton-eliminar {
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #633;
+    color: white;
+    cursor: pointer;
+}
+
+.boton-eliminar:hover {
+    background: #844;
+}
+
+.boton-anadir-ejercicio {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #555;
+    border-radius: 7px;
+    background: #333;
+    color: white;
+    cursor: pointer;
+}
+
+.boton-anadir-ejercicio:hover {
+    background: #444;
+}
+
+.boton-guardar-rutina {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 8px;
+    background: #444;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.boton-guardar-rutina:hover {
+    background: #555;
+}
+
+
+/* =========================
+   MÓVIL
+========================= */
 
 @media (max-width: 600px) {
 
@@ -330,7 +460,11 @@ main {
         width: calc(50% - 5px);
     }
 
-    .comparacion-serie {
-        font-size: 14px;
+    .editor-fila {
+        grid-template-columns: 1fr;
+    }
+
+    .ultimo-serie {
+        flex-wrap: wrap;
     }
 }
