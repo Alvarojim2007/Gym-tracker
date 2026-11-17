@@ -587,6 +587,8 @@ function mostrarResultadoComparacion() {
     let html = "";
 
     let pesoAnterior = null;
+    let mejorPeso = 0;
+    let mejorVolumen = 0;
 
     entrenamientos.forEach((entrenamiento) => {
 
@@ -602,6 +604,8 @@ function mostrarResultadoComparacion() {
 
         const fecha =
             new Date(entrenamiento.fecha);
+
+        let volumenEntrenamiento = 0;
 
         html += `
             <div class="comparacion">
@@ -620,6 +624,9 @@ function mostrarResultadoComparacion() {
             const pesoActual =
                 parseFloat(serie.peso);
 
+            const repeticionesActuales =
+                parseFloat(serie.repeticiones);
+
             let clasePeso = "mismo";
 
             if (
@@ -635,10 +642,25 @@ function mostrarResultadoComparacion() {
                 }
             }
 
+            let volumenSerie = 0;
+
+            if (
+                !isNaN(pesoActual) &&
+                !isNaN(repeticionesActuales)
+            ) {
+
+                volumenSerie =
+                    pesoActual * repeticionesActuales;
+
+                volumenEntrenamiento += volumenSerie;
+            }
+
             html += `
                 <div class="comparacion-serie">
 
-                    Serie ${indice + 1}:
+                    <strong>
+                        Serie ${indice + 1}
+                    </strong>
 
                     <span class="${clasePeso}">
                         ${serie.peso || "-"} kg
@@ -649,9 +671,21 @@ function mostrarResultadoComparacion() {
                     ${serie.repeticiones || "-"}
                     repeticiones
 
+                    ${
+                        volumenSerie > 0
+                            ? `<span class="volumen">
+                                → ${volumenSerie} kg
+                               </span>`
+                            : ""
+                    }
+
                 </div>
             `;
         });
+
+        if (volumenEntrenamiento > mejorVolumen) {
+            mejorVolumen = volumenEntrenamiento;
+        }
 
         const pesosValidos =
             ejercicio.series
@@ -664,11 +698,23 @@ function mostrarResultadoComparacion() {
 
         if (pesosValidos.length > 0) {
 
-            pesoAnterior =
+            const pesoMaximo =
                 Math.max(...pesosValidos);
+
+            if (pesoMaximo > mejorPeso) {
+                mejorPeso = pesoMaximo;
+            }
+
+            pesoAnterior = pesoMaximo;
         }
 
         html += `
+                <div class="volumen-entrenamiento">
+                    Volumen total:
+                    <strong>
+                        ${volumenEntrenamiento} kg
+                    </strong>
+                </div>
             </div>
         `;
     });
@@ -680,6 +726,30 @@ function mostrarResultadoComparacion() {
                 No hay datos para comparar este ejercicio.
             </p>
         `;
+
+    } else {
+
+        html += `
+            <div class="mejores-marcas">
+
+                <h3>Mejores marcas</h3>
+
+                <p>
+                    Mejor peso:
+                    <strong>
+                        ${mejorPeso} kg
+                    </strong>
+                </p>
+
+                <p>
+                    Mejor volumen:
+                    <strong>
+                        ${mejorVolumen} kg
+                    </strong>
+                </p>
+
+            </div>
+        `;
     }
 
     resultado.innerHTML = html;
@@ -687,7 +757,7 @@ function mostrarResultadoComparacion() {
 
 
 /* =========================
-   CONECTAR BOTÓN HISTORIAL
+   BOTÓN HISTORIAL
 ========================= */
 
 document.addEventListener(
