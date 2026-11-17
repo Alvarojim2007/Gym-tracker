@@ -92,15 +92,23 @@ function mostrarDia(dia) {
     rutina.ejercicios.forEach((ejercicio) => {
 
         html += `
-            <div class="ejercicio">
+    <div class="ejercicio" style="
+        background: #292929;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    ">
 
-                <h3>
-                    ${ejercicio.nombre}
-                    ${ejercicio.opcional ? " (Opcional)" : ""}
-                </h3>
+        <h3 style="
+            font-size: 20px;
+            margin-bottom: 18px;
+        ">
+            ${ejercicio.nombre}
+            ${ejercicio.opcional ? " (Opcional)" : ""}
+        </h3>
 
-                <div class="series">
-        `;
+        <div class="series">
+`;
 
         for (let i = 1; i <= ejercicio.series; i++) {
 
