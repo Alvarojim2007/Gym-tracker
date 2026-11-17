@@ -92,72 +92,42 @@ function mostrarDia(dia) {
     rutina.ejercicios.forEach((ejercicio) => {
 
         html += `
-    <div class="ejercicio" style="
-        background: #292929;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 25px;
-    ">
+            <div class="ejercicio">
 
-        <h3 style="
-            font-size: 20px;
-            margin-bottom: 18px;
-        ">
-            ${ejercicio.nombre}
-            ${ejercicio.opcional ? " (Opcional)" : ""}
-        </h3>
+                <h3>
+                    ${ejercicio.nombre}
+                    ${ejercicio.opcional ? " (Opcional)" : ""}
+                </h3>
 
-        <div class="series">
-`;
+                <div class="series">
+        `;
 
         for (let i = 1; i <= ejercicio.series; i++) {
 
             html += `
-    <div class="serie" style="
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 12px;
-    ">
-        <span style="
-            width: 65px;
-            color: #bbb;
-        ">Serie ${i}</span>
+                <div class="serie">
 
-        <input
-            type="number"
-            step="0.5"
-            placeholder="Peso (kg)"
-            class="peso"
-            style="
-                padding: 10px;
-                border: 1px solid #555;
-                border-radius: 6px;
-                background: #111;
-                color: white;
-                width: 160px;
-            "
-        >
+                    <span>Serie ${i}</span>
 
-        <input
-            type="number"
-            placeholder="Repeticiones"
-            class="repeticiones"
-            style="
-                padding: 10px;
-                border: 1px solid #555;
-                border-radius: 6px;
-                background: #111;
-                color: white;
-                width: 160px;
-            "
-        >
-    </div>
-`;
+                    <input
+                        type="number"
+                        step="0.5"
+                        placeholder="Peso (kg)"
+                        class="peso"
+                    >
+
+                    <input
+                        type="number"
+                        placeholder="Repeticiones"
+                        class="repeticiones"
+                    >
+
+                </div>
+            `;
+        }
 
         html += `
                 </div>
-
             </div>
         `;
     });
@@ -187,9 +157,14 @@ function guardarEntrenamiento(dia) {
 
     ejercicios.forEach((ejercicioElemento) => {
 
-        const nombre = ejercicioElemento.querySelector("h3").textContent.trim();
+        const nombre = ejercicioElemento
+            .querySelector("h3")
+            .textContent
+            .trim();
+
         const pesos = ejercicioElemento.querySelectorAll(".peso");
-        const repeticiones = ejercicioElemento.querySelectorAll(".repeticiones");
+        const repeticiones =
+            ejercicioElemento.querySelectorAll(".repeticiones");
 
         const series = [];
 
