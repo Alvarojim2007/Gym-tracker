@@ -78,21 +78,17 @@ const rutinasPorDefecto = {
 ========================= */
 
 function cargarRutinas() {
-
     const guardadas =
         localStorage.getItem("gymTrackerRutinas");
 
     if (guardadas) {
-
         return JSON.parse(guardadas);
-
     }
 
     return JSON.parse(
         JSON.stringify(rutinasPorDefecto)
     );
 }
-
 
 let rutinas = cargarRutinas();
 
@@ -102,14 +98,12 @@ let rutinas = cargarRutinas();
 ========================= */
 
 function mostrarDia(dia) {
-
     const contenido =
         document.getElementById("contenido");
 
     const rutina = rutinas[dia];
 
     if (rutina.ejercicios.length === 0) {
-
         contenido.innerHTML = `
             <h2>
                 Día ${dia} — ${rutina.nombre}
@@ -131,16 +125,13 @@ function mostrarDia(dia) {
         <div class="ejercicios">
     `;
 
-
     rutina.ejercicios.forEach(
         (ejercicio, indice) => {
-
             const ultimoEntrenamiento =
                 obtenerUltimoEntrenamientoEjercicio(
                     dia,
                     ejercicio.nombre
                 );
-
 
             html += `
                 <div class="ejercicio">
@@ -161,7 +152,6 @@ function mostrarDia(dia) {
             ========================= */
 
             if (ultimoEntrenamiento) {
-
                 const fecha =
                     new Date(
                         ultimoEntrenamiento.fecha
@@ -180,10 +170,8 @@ function mostrarDia(dia) {
                         </div>
                 `;
 
-
                 ultimoEntrenamiento.series.forEach(
                     (serie, indiceSerie) => {
-
                         html += `
                             <div class="ultimo-serie">
 
@@ -209,12 +197,10 @@ function mostrarDia(dia) {
                     }
                 );
 
-
                 html += `
                     </div>
                 `;
             }
-
 
             html += `
                 <div
@@ -222,13 +208,11 @@ function mostrarDia(dia) {
                     id="series-${indice}">
             `;
 
-
             for (
                 let i = 1;
                 i <= ejercicio.series;
                 i++
             ) {
-
                 let pesoAnterior = "";
                 let repeticionesAnteriores = "";
 
@@ -236,7 +220,6 @@ function mostrarDia(dia) {
                     ultimoEntrenamiento &&
                     ultimoEntrenamiento.series[i - 1]
                 ) {
-
                     pesoAnterior =
                         ultimoEntrenamiento
                             .series[i - 1]
@@ -248,14 +231,12 @@ function mostrarDia(dia) {
                             .repeticiones || "";
                 }
 
-
                 html += crearSerieHTML(
                     i,
                     pesoAnterior,
                     repeticionesAnteriores
                 );
             }
-
 
             html += `
                 </div>
@@ -274,7 +255,6 @@ function mostrarDia(dia) {
         }
     );
 
-
     html += `
         </div>
 
@@ -287,7 +267,6 @@ function mostrarDia(dia) {
 
         </button>
     `;
-
 
     contenido.innerHTML = html;
 }
@@ -302,7 +281,6 @@ function crearSerieHTML(
     pesoAnterior = "",
     repeticionesAnteriores = ""
 ) {
-
     return `
         <div class="serie">
 
@@ -335,7 +313,6 @@ function crearSerieHTML(
 ========================= */
 
 function anadirSerie(indiceEjercicio) {
-
     const contenedor =
         document.getElementById(
             `series-${indiceEjercicio}`
@@ -344,7 +321,6 @@ function anadirSerie(indiceEjercicio) {
     const numeroNuevaSerie =
         contenedor.querySelectorAll(".serie")
             .length + 1;
-
 
     contenedor.insertAdjacentHTML(
         "beforeend",
@@ -363,7 +339,6 @@ function obtenerUltimoEntrenamientoEjercicio(
     dia,
     nombreEjercicio
 ) {
-
     const historial =
         JSON.parse(
             localStorage.getItem(
@@ -371,17 +346,14 @@ function obtenerUltimoEntrenamientoEjercicio(
             )
         ) || [];
 
-
     const entrenamientos =
         historial.filter(
             (entrenamiento) => {
-
                 if (
                     entrenamiento.dia !== dia
                 ) {
                     return false;
                 }
-
 
                 return entrenamiento.ejercicios.some(
                     (ejercicio) =>
@@ -391,11 +363,9 @@ function obtenerUltimoEntrenamientoEjercicio(
             }
         );
 
-
     if (entrenamientos.length === 0) {
         return null;
     }
-
 
     entrenamientos.sort(
         (a, b) =>
@@ -403,10 +373,8 @@ function obtenerUltimoEntrenamientoEjercicio(
             new Date(a.fecha)
     );
 
-
     const entrenamiento =
         entrenamientos[0];
-
 
     const ejercicio =
         entrenamiento.ejercicios.find(
@@ -415,11 +383,9 @@ function obtenerUltimoEntrenamientoEjercicio(
                 nombreEjercicio
         );
 
-
     if (!ejercicio) {
         return null;
     }
-
 
     return {
         fecha: entrenamiento.fecha,
@@ -433,21 +399,17 @@ function obtenerUltimoEntrenamientoEjercicio(
 ========================= */
 
 function guardarEntrenamiento(dia) {
-
     const contenido =
         document.getElementById(
             "contenido"
         );
-
 
     const ejercicios =
         contenido.querySelectorAll(
             ".ejercicio"
         );
 
-
     const entrenamiento = {
-
         fecha:
             new Date().toISOString(),
 
@@ -456,10 +418,8 @@ function guardarEntrenamiento(dia) {
         ejercicios: []
     };
 
-
     ejercicios.forEach(
         (ejercicioElemento) => {
-
             const nombre =
                 ejercicioElemento
                     .querySelector("h3")
@@ -470,13 +430,11 @@ function guardarEntrenamiento(dia) {
                     )
                     .trim();
 
-
             const pesos =
                 ejercicioElemento
                     .querySelectorAll(
                         ".peso"
                     );
-
 
             const repeticiones =
                 ejercicioElemento
@@ -484,40 +442,31 @@ function guardarEntrenamiento(dia) {
                         ".repeticiones"
                     );
 
-
             const series = [];
-
 
             for (
                 let i = 0;
                 i < pesos.length;
                 i++
             ) {
-
                 series.push({
-
                     peso:
                         pesos[i].value,
 
                     repeticiones:
                         repeticiones[i].value
-
                 });
             }
 
-
             entrenamiento.ejercicios.push({
-
                 nombre:
                     nombre,
 
                 series:
                     series
-
             });
         }
     );
-
 
     const historial =
         JSON.parse(
@@ -526,11 +475,9 @@ function guardarEntrenamiento(dia) {
             )
         ) || [];
 
-
     historial.push(
         entrenamiento
     );
-
 
     localStorage.setItem(
         "gymTrackerHistorial",
@@ -538,7 +485,6 @@ function guardarEntrenamiento(dia) {
             historial
         )
     );
-
 
     alert(
         "Entrenamiento guardado correctamente."
@@ -551,12 +497,10 @@ function guardarEntrenamiento(dia) {
 ========================= */
 
 function mostrarHistorial() {
-
     const contenido =
         document.getElementById(
             "contenido"
         );
-
 
     const historial =
         JSON.parse(
@@ -565,11 +509,9 @@ function mostrarHistorial() {
             )
         ) || [];
 
-
     if (
         historial.length === 0
     ) {
-
         contenido.innerHTML = `
             <h2>Historial</h2>
 
@@ -582,19 +524,15 @@ function mostrarHistorial() {
         return;
     }
 
-
     const diasGuardados = [];
-
 
     historial.forEach(
         (entrenamiento) => {
-
             if (
                 !diasGuardados.includes(
                     entrenamiento.dia
                 )
             ) {
-
                 diasGuardados.push(
                     entrenamiento.dia
                 );
@@ -602,11 +540,9 @@ function mostrarHistorial() {
         }
     );
 
-
     diasGuardados.sort(
         (a, b) => a - b
     );
-
 
     let html = `
         <h2>Historial</h2>
@@ -619,10 +555,8 @@ function mostrarHistorial() {
         <div style="margin-top: 20px;">
     `;
 
-
     diasGuardados.forEach(
         (dia) => {
-
             html += `
                 <button
                     class="historial-dia"
@@ -635,7 +569,6 @@ function mostrarHistorial() {
             `;
         }
     );
-
 
     html += `
         </div>
@@ -657,7 +590,6 @@ function mostrarHistorial() {
         </button>
     `;
 
-
     contenido.innerHTML =
         html;
 }
@@ -668,12 +600,10 @@ function mostrarHistorial() {
 ========================= */
 
 function mostrarHistorialDia(dia) {
-
     const contenido =
         document.getElementById(
             "contenido"
         );
-
 
     const historial =
         JSON.parse(
@@ -681,7 +611,6 @@ function mostrarHistorialDia(dia) {
                 "gymTrackerHistorial"
             )
         ) || [];
-
 
     const entrenamientosDia =
         historial
@@ -696,13 +625,11 @@ function mostrarHistorialDia(dia) {
                     registro.entrenamiento.dia === dia
             );
 
-
     entrenamientosDia.sort(
         (a, b) =>
             new Date(b.entrenamiento.fecha) -
             new Date(a.entrenamiento.fecha)
     );
-
 
     let html = `
         <button
@@ -719,10 +646,8 @@ function mostrarHistorialDia(dia) {
         </h2>
     `;
 
-
     entrenamientosDia.forEach(
         (registro, indiceEntrenamiento) => {
-
             const entrenamiento =
                 registro.entrenamiento;
 
@@ -730,7 +655,6 @@ function mostrarHistorialDia(dia) {
                 new Date(
                     entrenamiento.fecha
                 );
-
 
             html += `
                 <div class="ejercicio">
@@ -750,10 +674,8 @@ function mostrarHistorialDia(dia) {
                     </h3>
             `;
 
-
             entrenamiento.ejercicios.forEach(
                 (ejercicio) => {
-
                     html += `
                         <div style="margin-top: 20px;">
 
@@ -762,10 +684,8 @@ function mostrarHistorialDia(dia) {
                             </strong>
                     `;
 
-
                     ejercicio.series.forEach(
                         (serie, indice) => {
-
                             html += `
                                 <p
                                     style="margin-top: 8px;">
@@ -788,13 +708,11 @@ function mostrarHistorialDia(dia) {
                         }
                     );
 
-
                     html += `
                         </div>
                     `;
                 }
             );
-
 
             html += `
                 <button
@@ -810,13 +728,11 @@ function mostrarHistorialDia(dia) {
                 </button>
             `;
 
-
             html += `
                 </div>
             `;
         }
     );
-
 
     contenido.innerHTML =
         html;
@@ -831,14 +747,12 @@ function editarEntrenamiento(
     dia,
     indiceEntrenamiento
 ) {
-
     const historial =
         JSON.parse(
             localStorage.getItem(
                 "gymTrackerHistorial"
             )
         ) || [];
-
 
     const entrenamientosDia =
         historial
@@ -858,12 +772,10 @@ function editarEntrenamiento(
                     new Date(a.entrenamiento.fecha)
             );
 
-
     const registro =
         entrenamientosDia[
             indiceEntrenamiento
         ];
-
 
     if (
         !registro
@@ -871,16 +783,13 @@ function editarEntrenamiento(
         return;
     }
 
-
     const entrenamiento =
         registro.entrenamiento;
-
 
     const fecha =
         new Date(
             entrenamiento.fecha
         );
-
 
     let html = `
         <button
@@ -910,10 +819,8 @@ function editarEntrenamiento(
         </p>
     `;
 
-
     entrenamiento.ejercicios.forEach(
         (ejercicio, indiceEjercicio) => {
-
             html += `
                 <div
                     class="ejercicio"
@@ -926,10 +833,8 @@ function editarEntrenamiento(
                     <div class="series">
             `;
 
-
             ejercicio.series.forEach(
                 (serie, indiceSerie) => {
-
                     html += `
                         <div class="serie">
 
@@ -966,7 +871,6 @@ function editarEntrenamiento(
                 }
             );
 
-
             html += `
                     </div>
 
@@ -984,7 +888,6 @@ function editarEntrenamiento(
         }
     );
 
-
     html += `
         <button
             class="guardar"
@@ -998,35 +901,29 @@ function editarEntrenamiento(
         </button>
     `;
 
-
     document.getElementById(
         "contenido"
     ).innerHTML =
         html;
 }
 
-
 function anadirSerieEditada(
     boton
 ) {
-
     const ejercicio =
         boton.closest(
             ".ejercicio"
         );
-
 
     const contenedor =
         ejercicio.querySelector(
             ".series"
         );
 
-
     const numero =
         contenedor.querySelectorAll(
             ".serie"
         ).length + 1;
-
 
     contenedor.insertAdjacentHTML(
         "beforeend",
@@ -1066,16 +963,13 @@ function anadirSerieEditada(
     );
 }
 
-
 function eliminarSerieEditada(
     boton
 ) {
-
     const serie =
         boton.closest(
             ".serie"
         );
-
 
     if (
         serie
@@ -1083,18 +977,15 @@ function eliminarSerieEditada(
         serie.remove();
     }
 
-
     const ejercicio =
         boton.closest(
             ".ejercicio"
         );
 
-
     const contenedor =
         ejercicio.querySelector(
             ".series"
         );
-
 
     contenedor
         .querySelectorAll(
@@ -1102,7 +993,6 @@ function eliminarSerieEditada(
         )
         .forEach(
             (serieElemento, indice) => {
-
                 serieElemento
                     .querySelector(
                         "span"
@@ -1113,12 +1003,10 @@ function eliminarSerieEditada(
         );
 }
 
-
 function guardarEntrenamientoEditado(
     dia,
     indiceEntrenamiento
 ) {
-
     const historial =
         JSON.parse(
             localStorage.getItem(
@@ -1126,20 +1014,17 @@ function guardarEntrenamientoEditado(
             )
         ) || [];
 
-
     if (
         !historial[
             indiceEntrenamiento
         ]
     ) {
-
         alert(
             "No se ha encontrado el entrenamiento."
         );
 
         return;
     }
-
 
     const elementosEjercicio =
         document
@@ -1150,14 +1035,11 @@ function guardarEntrenamientoEditado(
                 ".ejercicio"
             );
 
-
     const ejercicios =
         [];
 
-
     elementosEjercicio.forEach(
         (ejercicioElemento) => {
-
             const nombre =
                 ejercicioElemento
                     .querySelector(
@@ -1166,29 +1048,24 @@ function guardarEntrenamientoEditado(
                     .textContent
                     .trim();
 
-
             const pesos =
                 ejercicioElemento.querySelectorAll(
                     ".peso"
                 );
-
 
             const repeticiones =
                 ejercicioElemento.querySelectorAll(
                     ".repeticiones"
                 );
 
-
             const series =
                 [];
-
 
             for (
                 let i = 0;
                 i < pesos.length;
                 i++
             ) {
-
                 series.push({
                     peso:
                         pesos[i].value,
@@ -1198,11 +1075,9 @@ function guardarEntrenamientoEditado(
                 });
             }
 
-
             if (
                 series.length > 0
             ) {
-
                 ejercicios.push({
                     nombre:
                         nombre,
@@ -1214,12 +1089,10 @@ function guardarEntrenamientoEditado(
         }
     );
 
-
     historial[
         indiceEntrenamiento
     ].ejercicios =
         ejercicios;
-
 
     localStorage.setItem(
         "gymTrackerHistorial",
@@ -1228,11 +1101,9 @@ function guardarEntrenamientoEditado(
         )
     );
 
-
     alert(
         "Entrenamiento actualizado correctamente."
     );
-
 
     mostrarHistorialDia(
         dia
@@ -1245,12 +1116,10 @@ function guardarEntrenamientoEditado(
 ========================= */
 
 function mostrarComparar() {
-
     const contenido =
         document.getElementById(
             "contenido"
         );
-
 
     const historial =
         JSON.parse(
@@ -1259,11 +1128,9 @@ function mostrarComparar() {
             )
         ) || [];
 
-
     if (
         historial.length === 0
     ) {
-
         contenido.innerHTML = `
             <h2>
                 Comparar progreso
@@ -1278,19 +1145,15 @@ function mostrarComparar() {
         return;
     }
 
-
     const diasGuardados = [];
-
 
     historial.forEach(
         (entrenamiento) => {
-
             if (
                 !diasGuardados.includes(
                     entrenamiento.dia
                 )
             ) {
-
                 diasGuardados.push(
                     entrenamiento.dia
                 );
@@ -1298,11 +1161,9 @@ function mostrarComparar() {
         }
     );
 
-
     diasGuardados.sort(
         (a, b) => a - b
     );
-
 
     let html = `
         <button
@@ -1327,10 +1188,8 @@ function mostrarComparar() {
             onchange="actualizarEjerciciosComparar()">
     `;
 
-
     diasGuardados.forEach(
         (dia) => {
-
             html += `
                 <option value="${dia}">
                     Día ${dia} —
@@ -1339,7 +1198,6 @@ function mostrarComparar() {
             `;
         }
     );
-
 
     html += `
         </select>
@@ -1359,10 +1217,8 @@ function mostrarComparar() {
         </div>
     `;
 
-
     contenido.innerHTML =
         html;
-
 
     actualizarEjerciciosComparar();
 }
@@ -1373,18 +1229,15 @@ function mostrarComparar() {
 ========================= */
 
 function actualizarEjerciciosComparar() {
-
     const selectorDia =
         document.getElementById(
             "selector-dia"
         );
 
-
     const selectorEjercicio =
         document.getElementById(
             "selector-ejercicio"
         );
-
 
     if (
         !selectorDia ||
@@ -1393,12 +1246,10 @@ function actualizarEjerciciosComparar() {
         return;
     }
 
-
     const dia =
         parseInt(
             selectorDia.value
         );
-
 
     const historial =
         JSON.parse(
@@ -1407,29 +1258,23 @@ function actualizarEjerciciosComparar() {
             )
         ) || [];
 
-
     const entrenamientosDia =
         historial.filter(
             (entrenamiento) =>
                 entrenamiento.dia === dia
         );
 
-
     const nombresEjercicios = [];
-
 
     entrenamientosDia.forEach(
         (entrenamiento) => {
-
             entrenamiento.ejercicios.forEach(
                 (ejercicio) => {
-
                     if (
                         !nombresEjercicios.includes(
                             ejercicio.nombre
                         )
                     ) {
-
                         nombresEjercicios.push(
                             ejercicio.nombre
                         );
@@ -1439,34 +1284,27 @@ function actualizarEjerciciosComparar() {
         }
     );
 
-
     selectorEjercicio.innerHTML =
         "";
 
-
     nombresEjercicios.forEach(
         (nombre) => {
-
             const opcion =
                 document.createElement(
                     "option"
                 );
 
-
             opcion.value =
                 nombre;
 
-
             opcion.textContent =
                 nombre;
-
 
             selectorEjercicio.appendChild(
                 opcion
             );
         }
     );
-
 
     mostrarResultadoComparacion();
 }
@@ -1477,24 +1315,20 @@ function actualizarEjerciciosComparar() {
 ========================= */
 
 function mostrarResultadoComparacion() {
-
     const selectorDia =
         document.getElementById(
             "selector-dia"
         );
-
 
     const selectorEjercicio =
         document.getElementById(
             "selector-ejercicio"
         );
 
-
     const resultado =
         document.getElementById(
             "resultado-comparacion"
         );
-
 
     if (
         !selectorDia ||
@@ -1504,16 +1338,13 @@ function mostrarResultadoComparacion() {
         return;
     }
 
-
     const dia =
         parseInt(
             selectorDia.value
         );
 
-
     const nombreEjercicio =
         selectorEjercicio.value;
-
 
     const historial =
         JSON.parse(
@@ -1522,13 +1353,11 @@ function mostrarResultadoComparacion() {
             )
         ) || [];
 
-
     let entrenamientos =
         historial.filter(
             (entrenamiento) =>
                 entrenamiento.dia === dia
         );
-
 
     entrenamientos.sort(
         (a, b) =>
@@ -1536,42 +1365,60 @@ function mostrarResultadoComparacion() {
             new Date(a.fecha)
     );
 
-
     let html = "";
-
-
-    let seriesAnteriores = [];
-
 
     let mejorPeso = 0;
     let mejorVolumen = 0;
 
+    const registros =
+        entrenamientos
+            .map((entrenamiento) => ({
+                entrenamiento,
+                ejercicio:
+                    entrenamiento.ejercicios.find(
+                        (ejercicio) =>
+                            ejercicio.nombre ===
+                            nombreEjercicio
+                    )
+            }))
+            .filter(
+                (registro) =>
+                    registro.ejercicio
+            );
 
-    entrenamientos.forEach(
-        (entrenamiento) => {
+    if (registros.length === 0) {
+        resultado.innerHTML = `
+            <p>
+                No hay datos para comparar
+                este ejercicio.
+            </p>
+        `;
+
+        return;
+    }
+
+    registros.forEach(
+        (registro, indiceEntrenamiento) => {
+            const entrenamiento =
+                registro.entrenamiento;
 
             const ejercicio =
-                entrenamiento.ejercicios.find(
-                    (e) =>
-                        e.nombre ===
-                        nombreEjercicio
-                );
+                registro.ejercicio;
 
-
-            if (!ejercicio) {
-                return;
-            }
-
+            const ejercicioAnterior =
+                registros[indiceEntrenamiento + 1]
+                    ? registros[
+                        indiceEntrenamiento + 1
+                    ].ejercicio
+                    : null;
 
             const fecha =
                 new Date(
                     entrenamiento.fecha
                 );
 
-
             let volumenEntrenamiento =
                 0;
-
 
             html += `
                 <div class="comparacion">
@@ -1591,134 +1438,107 @@ function mostrarResultadoComparacion() {
                     </h3>
             `;
 
-
             ejercicio.series.forEach(
                 (serie, indice) => {
-
                     const pesoActual =
                         parseFloat(
                             serie.peso
                         );
-
 
                     const repeticionesActuales =
                         parseFloat(
                             serie.repeticiones
                         );
 
+                    const serieAnterior =
+                        ejercicioAnterior
+                            ? ejercicioAnterior.series[indice]
+                            : null;
+
+                    const pesoAnterior =
+                        serieAnterior
+                            ? parseFloat(
+                                serieAnterior.peso
+                            )
+                            : NaN;
+
+                    const repeticionesAnteriores =
+                        serieAnterior
+                            ? parseFloat(
+                                serieAnterior.repeticiones
+                            )
+                            : NaN;
 
                     let clasePeso =
                         "mismo";
 
-
                     let claseRepeticiones =
                         "mismo";
 
+                    let diferenciaPeso =
+                        "";
 
-                    const serieAnterior =
-                        seriesAnteriores[
-                            indice
-                        ];
-
+                    let diferenciaRepeticiones =
+                        "";
 
                     if (
-                        serieAnterior
+                        !isNaN(pesoActual) &&
+                        !isNaN(pesoAnterior)
                     ) {
+                        const diferencia =
+                            pesoActual -
+                            pesoAnterior;
 
-                        const pesoAnterior =
-                            parseFloat(
-                                serieAnterior.peso
-                            );
-
-
-                        const repeticionesAnterior =
-                            parseFloat(
-                                serieAnterior
-                                    .repeticiones
-                            );
-
-
-                        if (
-                            !isNaN(
-                                pesoActual
-                            ) &&
-                            !isNaN(
-                                pesoAnterior
-                            )
-                        ) {
-
-                            if (
-                                pesoActual >
-                                pesoAnterior
-                            ) {
-
-                                clasePeso =
-                                    "subida";
-
-                            }
-                            else if (
-                                pesoActual <
-                                pesoAnterior
-                            ) {
-
-                                clasePeso =
-                                    "bajada";
-                            }
+                        if (diferencia > 0) {
+                            clasePeso =
+                                "subida";
+                        } else if (diferencia < 0) {
+                            clasePeso =
+                                "bajada";
                         }
 
-
-                        if (
-                            !isNaN(
-                                repeticionesActuales
-                            ) &&
-                            !isNaN(
-                                repeticionesAnterior
-                            )
-                        ) {
-
-                            if (
-                                repeticionesActuales >
-                                repeticionesAnterior
-                            ) {
-
-                                claseRepeticiones =
-                                    "subida";
-
-                            }
-                            else if (
-                                repeticionesActuales <
-                                repeticionesAnterior
-                            ) {
-
-                                claseRepeticiones =
-                                    "bajada";
-                            }
-                        }
+                        diferenciaPeso =
+                            diferencia > 0
+                                ? `(+${diferencia} kg)`
+                                : `(${diferencia} kg)`;
                     }
 
+                    if (
+                        !isNaN(repeticionesActuales) &&
+                        !isNaN(repeticionesAnteriores)
+                    ) {
+                        const diferencia =
+                            repeticionesActuales -
+                            repeticionesAnteriores;
+
+                        if (diferencia > 0) {
+                            claseRepeticiones =
+                                "subida";
+                        } else if (diferencia < 0) {
+                            claseRepeticiones =
+                                "bajada";
+                        }
+
+                        diferenciaRepeticiones =
+                            diferencia > 0
+                                ? `(+${diferencia} reps)`
+                                : `(${diferencia} reps)`;
+                    }
 
                     let volumenSerie =
                         0;
 
-
                     if (
-                        !isNaN(
-                            pesoActual
-                        ) &&
-                        !isNaN(
-                            repeticionesActuales
-                        )
+                        !isNaN(pesoActual) &&
+                        !isNaN(repeticionesActuales)
                     ) {
-
                         volumenSerie =
                             pesoActual *
                             repeticionesActuales;
 
-
                         volumenEntrenamiento +=
                             volumenSerie;
                     }
-
 
                     html += `
                         <div
@@ -1737,6 +1557,8 @@ function mostrarResultadoComparacion() {
                                     "-"
                                 } kg
 
+                                ${diferenciaPeso}
+
                             </span>
 
                             ×
@@ -1750,6 +1572,8 @@ function mostrarResultadoComparacion() {
                                 }
 
                                 repeticiones
+
+                                ${diferenciaRepeticiones}
 
                             </span>
 
@@ -1773,16 +1597,13 @@ function mostrarResultadoComparacion() {
                 }
             );
 
-
             if (
                 volumenEntrenamiento >
                 mejorVolumen
             ) {
-
                 mejorVolumen =
                     volumenEntrenamiento;
             }
-
 
             const pesosValidos =
                 ejercicio.series
@@ -1797,45 +1618,22 @@ function mostrarResultadoComparacion() {
                             !isNaN(peso)
                     );
 
-
             if (
                 pesosValidos.length > 0
             ) {
-
                 const pesoMaximo =
                     Math.max(
                         ...pesosValidos
                     );
 
-
                 if (
                     pesoMaximo >
                     mejorPeso
                 ) {
-
                     mejorPeso =
                         pesoMaximo;
                 }
             }
-
-
-            /*
-             * Guardamos las series actuales
-             * para compararlas con las
-             * mismas series del próximo
-             * entrenamiento.
-             */
-            seriesAnteriores =
-                ejercicio.series.map(
-                    (serie) => ({
-                        peso:
-                            serie.peso,
-
-                        repeticiones:
-                            serie.repeticiones
-                    })
-                );
-
 
             html += `
                     <div
@@ -1855,51 +1653,34 @@ function mostrarResultadoComparacion() {
         }
     );
 
+    html += `
+        <div
+            class="mejores-marcas">
 
-    if (
-        html === ""
-    ) {
+            <h3>
+                Mejores marcas
+            </h3>
 
-        html = `
             <p>
-                No hay datos para comparar
-                este ejercicio.
+                Mejor peso:
+
+                <strong>
+                    ${mejorPeso}
+                    kg
+                </strong>
             </p>
-        `;
 
-    }
-    else {
+            <p>
+                Mejor volumen:
 
-        html += `
-            <div
-                class="mejores-marcas">
+                <strong>
+                    ${mejorVolumen}
+                    kg
+                </strong>
+            </p>
 
-                <h3>
-                    Mejores marcas
-                </h3>
-
-                <p>
-                    Mejor peso:
-
-                    <strong>
-                        ${mejorPeso}
-                        kg
-                    </strong>
-                </p>
-
-                <p>
-                    Mejor volumen:
-
-                    <strong>
-                        ${mejorVolumen}
-                        kg
-                    </strong>
-                </p>
-
-            </div>
-        `;
-    }
-
+        </div>
+    `;
 
     resultado.innerHTML =
         html;
@@ -1911,7 +1692,6 @@ function mostrarResultadoComparacion() {
 ========================= */
 
 function mostrarGraficas() {
-
     const contenido =
         document.getElementById(
             "contenido"
@@ -1927,7 +1707,6 @@ function mostrarGraficas() {
     if (
         historial.length === 0
     ) {
-
         contenido.innerHTML = `
             <button
                 class="volver"
@@ -1950,19 +1729,15 @@ function mostrarGraficas() {
         return;
     }
 
-
     const diasGuardados = [];
-
 
     historial.forEach(
         (entrenamiento) => {
-
             if (
                 !diasGuardados.includes(
                     entrenamiento.dia
                 )
             ) {
-
                 diasGuardados.push(
                     entrenamiento.dia
                 );
@@ -1970,11 +1745,9 @@ function mostrarGraficas() {
         }
     );
 
-
     diasGuardados.sort(
         (a, b) => a - b
     );
-
 
     let html = `
         <button
@@ -1999,10 +1772,8 @@ function mostrarGraficas() {
             onchange="actualizarEjerciciosGrafica()">
     `;
 
-
     diasGuardados.forEach(
         (dia) => {
-
             html += `
                 <option value="${dia}">
                     Día ${dia} —
@@ -2011,7 +1782,6 @@ function mostrarGraficas() {
             `;
         }
     );
-
 
     html += `
         </select>
@@ -2049,7 +1819,6 @@ function mostrarGraficas() {
 
         </select>
 
-
         <div
             id="resumen-grafica"
             style="
@@ -2059,7 +1828,6 @@ function mostrarGraficas() {
                 gap:10px;
             ">
         </div>
-
 
         <div
             style="
@@ -2084,7 +1852,6 @@ function mostrarGraficas() {
 
         </div>
 
-
         <div
             id="detalle-grafica"
             style="
@@ -2098,10 +1865,8 @@ function mostrarGraficas() {
         </div>
     `;
 
-
     contenido.innerHTML =
         html;
-
 
     actualizarEjerciciosGrafica();
 }
@@ -2112,7 +1877,6 @@ function mostrarGraficas() {
 ========================= */
 
 function actualizarEjerciciosGrafica() {
-
     const selectorDia =
         document.getElementById(
             "grafica-dia"
@@ -2130,12 +1894,10 @@ function actualizarEjerciciosGrafica() {
         return;
     }
 
-
     const dia =
         parseInt(
             selectorDia.value
         );
-
 
     const historial =
         JSON.parse(
@@ -2144,47 +1906,37 @@ function actualizarEjerciciosGrafica() {
             )
         ) || [];
 
-
     const entrenamientosDia =
         historial.filter(
             (entrenamiento) =>
                 entrenamiento.dia === dia
         );
 
-
     const nombresEjercicios = [];
-
 
     entrenamientosDia.forEach(
         (entrenamiento) => {
-
             entrenamiento.ejercicios.forEach(
                 (ejercicio) => {
-
                     if (
                         !nombresEjercicios.includes(
                             ejercicio.nombre
                         )
                     ) {
-
                         nombresEjercicios.push(
                             ejercicio.nombre
                         );
                     }
-
                 }
             );
         }
     );
 
-
     selectorEjercicio.innerHTML =
         "";
 
-
     nombresEjercicios.forEach(
         (nombre) => {
-
             const opcion =
                 document.createElement(
                     "option"
@@ -2202,7 +1954,6 @@ function actualizarEjerciciosGrafica() {
         }
     );
 
-
     dibujarGraficaProgreso();
 }
 
@@ -2216,14 +1967,12 @@ function obtenerDatosGrafica(
     nombreEjercicio,
     metrica
 ) {
-
     const historial =
         JSON.parse(
             localStorage.getItem(
                 "gymTrackerHistorial"
             )
         ) || [];
-
 
     const entrenamientos =
         historial
@@ -2237,13 +1986,10 @@ function obtenerDatosGrafica(
                     new Date(b.fecha)
             );
 
-
     const datos = [];
-
 
     entrenamientos.forEach(
         (entrenamiento) => {
-
             const ejercicio =
                 entrenamiento.ejercicios.find(
                     (e) =>
@@ -2251,19 +1997,15 @@ function obtenerDatosGrafica(
                         nombreEjercicio
                 );
 
-
             if (!ejercicio) {
                 return;
             }
 
-
             let valor = 0;
-
 
             if (
                 metrica === "peso"
             ) {
-
                 const pesos =
                     ejercicio.series
                         .map(
@@ -2279,28 +2021,21 @@ function obtenerDatosGrafica(
                                 )
                         );
 
-
                 if (
                     pesos.length === 0
                 ) {
                     return;
                 }
 
-
                 valor =
                     Math.max(
                         ...pesos
                     );
-            }
-
-
-            else if (
+            } else if (
                 metrica === "volumen"
             ) {
-
                 ejercicio.series.forEach(
                     (serie) => {
-
                         const peso =
                             parseFloat(
                                 serie.peso
@@ -2311,7 +2046,6 @@ function obtenerDatosGrafica(
                                 serie.repeticiones
                             );
 
-
                         if (
                             !isNaN(
                                 peso
@@ -2320,7 +2054,6 @@ function obtenerDatosGrafica(
                                 repeticiones
                             )
                         ) {
-
                             valor +=
                                 peso *
                                 repeticiones;
@@ -2328,40 +2061,31 @@ function obtenerDatosGrafica(
                     }
                 );
 
-
                 if (
                     valor === 0
                 ) {
                     return;
                 }
-            }
-
-
-            else if (
+            } else if (
                 metrica === "repeticiones"
             ) {
-
                 ejercicio.series.forEach(
                     (serie) => {
-
                         const repeticiones =
                             parseFloat(
                                 serie.repeticiones
                             );
-
 
                         if (
                             !isNaN(
                                 repeticiones
                             )
                         ) {
-
                             valor +=
                                 repeticiones;
                         }
                     }
                 );
-
 
                 if (
                     valor === 0
@@ -2370,19 +2094,15 @@ function obtenerDatosGrafica(
                 }
             }
 
-
             datos.push({
-
                 fecha:
                     entrenamiento.fecha,
 
                 valor:
                     valor
-
             });
         }
     );
-
 
     return datos;
 }
@@ -2395,18 +2115,15 @@ function obtenerDatosGrafica(
 function formatearNumeroGrafica(
     valor
 ) {
-
     if (
         Number.isInteger(
             valor
         )
     ) {
-
         return String(
             valor
         );
     }
-
 
     return valor.toFixed(
         1
@@ -2422,11 +2139,9 @@ function calcularEscalaGrafica(
     minimo,
     maximo
 ) {
-
     if (
         minimo === maximo
     ) {
-
         const margen =
             Math.max(
                 Math.abs(
@@ -2435,9 +2150,7 @@ function calcularEscalaGrafica(
                 1
             );
 
-
         return {
-
             minimo:
                 Math.max(
                     0,
@@ -2448,35 +2161,28 @@ function calcularEscalaGrafica(
             maximo:
                 maximo +
                 margen
-
         };
     }
-
 
     const rango =
         maximo -
         minimo;
 
-
     const margen =
         rango *
         0.12;
-
 
     let escalaMinima =
         minimo -
         margen;
 
-
     let escalaMaxima =
         maximo +
         margen;
 
-
     if (
         minimo >= 0
     ) {
-
         escalaMinima =
             Math.max(
                 0,
@@ -2484,15 +2190,12 @@ function calcularEscalaGrafica(
             );
     }
 
-
     return {
-
         minimo:
             escalaMinima,
 
         maximo:
             escalaMaxima
-
     };
 }
 
@@ -2502,7 +2205,6 @@ function calcularEscalaGrafica(
 ========================= */
 
 function dibujarGraficaProgreso() {
-
     const selectorDia =
         document.getElementById(
             "grafica-dia"
@@ -2533,7 +2235,6 @@ function dibujarGraficaProgreso() {
             "detalle-grafica"
         );
 
-
     if (
         !selectorDia ||
         !selectorEjercicio ||
@@ -2543,20 +2244,16 @@ function dibujarGraficaProgreso() {
         return;
     }
 
-
     const dia =
         parseInt(
             selectorDia.value
         );
 
-
     const nombreEjercicio =
         selectorEjercicio.value;
 
-
     const metrica =
         selectorMetrica.value;
-
 
     const datos =
         obtenerDatosGrafica(
@@ -2565,12 +2262,10 @@ function dibujarGraficaProgreso() {
             metrica
         );
 
-
     const ctx =
         canvas.getContext(
             "2d"
         );
-
 
     ctx.clearRect(
         0,
@@ -2579,11 +2274,9 @@ function dibujarGraficaProgreso() {
         canvas.height
     );
 
-
     if (
         datos.length === 0
     ) {
-
         resumen.innerHTML = `
             <div
                 style="
@@ -2600,7 +2293,6 @@ function dibujarGraficaProgreso() {
             </div>
         `;
 
-
         if (
             detalle
         ) {
@@ -2608,10 +2300,8 @@ function dibujarGraficaProgreso() {
                 "";
         }
 
-
         return;
     }
-
 
     let tituloMetrica =
         "";
@@ -2619,33 +2309,23 @@ function dibujarGraficaProgreso() {
     let unidad =
         "";
 
-
     if (
         metrica === "peso"
     ) {
-
         tituloMetrica =
             "Peso máximo";
 
         unidad =
             "kg";
-
-    }
-
-    else if (
+    } else if (
         metrica === "volumen"
     ) {
-
         tituloMetrica =
             "Volumen total";
 
         unidad =
             "kg";
-
-    }
-
-    else {
-
+    } else {
         tituloMetrica =
             "Repeticiones totales";
 
@@ -2653,17 +2333,14 @@ function dibujarGraficaProgreso() {
             "reps";
     }
 
-
     const valores =
         datos.map(
             (dato) =>
                 dato.valor
         );
 
-
     const primero =
         valores[0];
-
 
     const actual =
         valores[
@@ -2671,33 +2348,27 @@ function dibujarGraficaProgreso() {
             1
         ];
 
-
     const mejor =
         Math.max(
             ...valores
         );
-
 
     const minimo =
         Math.min(
             ...valores
         );
 
-
     const maximo =
         Math.max(
             ...valores
         );
 
-
     let cambio =
         0;
-
 
     if (
         primero !== 0
     ) {
-
         cambio =
             (
                 (
@@ -2709,31 +2380,22 @@ function dibujarGraficaProgreso() {
             100;
     }
 
-
     let claseCambio =
         "";
-
 
     if (
         cambio > 0
     ) {
-
         claseCambio =
             "subida";
-
-    }
-
-    else if (
+    } else if (
         cambio < 0
     ) {
-
         claseCambio =
             "bajada";
     }
 
-
     resumen.innerHTML = `
-
         <div
             style="
                 background:#151515;
@@ -2748,9 +2410,7 @@ function dibujarGraficaProgreso() {
                     color:#999;
                     font-size:13px;
                 ">
-
                 Inicial
-
             </div>
 
             <div
@@ -2759,16 +2419,13 @@ function dibujarGraficaProgreso() {
                     margin-top:5px;
                     font-weight:bold;
                 ">
-
                 ${formatearNumeroGrafica(
                     primero
                 )}
                 ${unidad}
-
             </div>
 
         </div>
-
 
         <div
             style="
@@ -2784,9 +2441,7 @@ function dibujarGraficaProgreso() {
                     color:#999;
                     font-size:13px;
                 ">
-
                 Actual
-
             </div>
 
             <div
@@ -2795,16 +2450,13 @@ function dibujarGraficaProgreso() {
                     margin-top:5px;
                     font-weight:bold;
                 ">
-
                 ${formatearNumeroGrafica(
                     actual
                 )}
                 ${unidad}
-
             </div>
 
         </div>
-
 
         <div
             style="
@@ -2820,9 +2472,7 @@ function dibujarGraficaProgreso() {
                     color:#999;
                     font-size:13px;
                 ">
-
                 Mejor
-
             </div>
 
             <div
@@ -2831,16 +2481,13 @@ function dibujarGraficaProgreso() {
                     margin-top:5px;
                     font-weight:bold;
                 ">
-
                 ${formatearNumeroGrafica(
                     mejor
                 )}
                 ${unidad}
-
             </div>
 
         </div>
-
 
         <div
             style="
@@ -2856,9 +2503,7 @@ function dibujarGraficaProgreso() {
                     color:#999;
                     font-size:13px;
                 ">
-
                 Cambio
-
             </div>
 
             <div
@@ -2868,7 +2513,6 @@ function dibujarGraficaProgreso() {
                     margin-top:5px;
                     font-weight:bold;
                 ">
-
                 ${
                     cambio > 0
                         ? "+"
@@ -2876,24 +2520,19 @@ function dibujarGraficaProgreso() {
                 }${cambio.toFixed(
                     1
                 )}%
-
             </div>
 
         </div>
     `;
 
-
     if (
         detalle
     ) {
-
         detalle.innerHTML = `
-
             <strong
                 style="
                     color:#fff;
                 ">
-
                 ${datos.length}
 
                 ${
@@ -2901,7 +2540,6 @@ function dibujarGraficaProgreso() {
                         ? "entrenamiento"
                         : "entrenamientos"
                 }
-
             </strong>
 
             · Desde
@@ -2939,42 +2577,33 @@ function dibujarGraficaProgreso() {
         `;
     }
 
-
     const ancho =
         canvas.width;
-
 
     const alto =
         canvas.height;
 
-
     const margenIzquierdo =
         82;
-
 
     const margenDerecho =
         35;
 
-
     const margenSuperior =
         70;
 
-
     const margenInferior =
         85;
-
 
     const anchoGrafica =
         ancho -
         margenIzquierdo -
         margenDerecho;
 
-
     const altoGrafica =
         alto -
         margenSuperior -
         margenInferior;
-
 
     const escala =
         calcularEscalaGrafica(
@@ -2982,23 +2611,15 @@ function dibujarGraficaProgreso() {
             maximo
         );
 
-
     const escalaMinima =
         escala.minimo;
-
 
     const escalaMaxima =
         escala.maximo;
 
-
     const rango =
         escalaMaxima -
         escalaMinima;
-
-
-    /* =========================
-       FONDO
-    ========================= */
 
     ctx.fillStyle =
         "#111";
@@ -3009,11 +2630,6 @@ function dibujarGraficaProgreso() {
         ancho,
         alto
     );
-
-
-    /* =========================
-       TÍTULO
-    ========================= */
 
     ctx.fillStyle =
         "#fff";
@@ -3030,11 +2646,6 @@ function dibujarGraficaProgreso() {
         32
     );
 
-
-    /* =========================
-       SUBTÍTULO
-    ========================= */
-
     ctx.fillStyle =
         "#888";
 
@@ -3050,11 +2661,6 @@ function dibujarGraficaProgreso() {
         ancho / 2,
         52
     );
-
-
-    /* =========================
-       EJES
-    ========================= */
 
     ctx.strokeStyle =
         "#444";
@@ -3084,14 +2690,8 @@ function dibujarGraficaProgreso() {
 
     ctx.stroke();
 
-
-    /* =========================
-       LÍNEAS HORIZONTALES
-    ========================= */
-
     const numeroLineas =
         5;
-
 
     ctx.font =
         "12px Arial";
@@ -3099,42 +2699,34 @@ function dibujarGraficaProgreso() {
     ctx.textAlign =
         "right";
 
-
     for (
         let i = 0;
         i <= numeroLineas;
         i++
     ) {
-
         const porcentaje =
             i /
             numeroLineas;
-
 
         const y =
             margenSuperior +
             altoGrafica *
                 porcentaje;
 
-
         const valor =
             escalaMaxima -
             rango *
                 porcentaje;
 
-
         ctx.strokeStyle =
             "#252525";
 
-
         ctx.beginPath();
-
 
         ctx.moveTo(
             margenIzquierdo,
             y
         );
-
 
         ctx.lineTo(
             ancho -
@@ -3142,13 +2734,10 @@ function dibujarGraficaProgreso() {
             y
         );
 
-
         ctx.stroke();
-
 
         ctx.fillStyle =
             "#888";
-
 
         ctx.fillText(
             formatearNumeroGrafica(
@@ -3160,33 +2749,20 @@ function dibujarGraficaProgreso() {
         );
     }
 
-
-    /* =========================
-       CALCULAR PUNTOS
-    ========================= */
-
     const puntos = [];
-
 
     datos.forEach(
         (dato, indice) => {
-
             let x;
-
 
             if (
                 datos.length === 1
             ) {
-
                 x =
                     margenIzquierdo +
                     anchoGrafica /
                         2;
-
-            }
-
-            else {
-
+            } else {
                 x =
                     margenIzquierdo +
                     (
@@ -3199,7 +2775,6 @@ function dibujarGraficaProgreso() {
                     anchoGrafica;
             }
 
-
             const y =
                 margenSuperior +
                 (
@@ -3211,28 +2786,19 @@ function dibujarGraficaProgreso() {
                 ) *
                 altoGrafica;
 
-
             puntos.push({
-
                 x:
                     x,
 
                 y:
                     y
-
             });
         }
     );
 
-
-    /* =========================
-       ÁREA BAJO LA LÍNEA
-    ========================= */
-
     if (
         puntos.length > 1
     ) {
-
         const gradiente =
             ctx.createLinearGradient(
                 0,
@@ -3242,25 +2808,20 @@ function dibujarGraficaProgreso() {
                     margenInferior
             );
 
-
         gradiente.addColorStop(
             0,
             "rgba(77,171,247,0.22)"
         );
-
 
         gradiente.addColorStop(
             1,
             "rgba(77,171,247,0)"
         );
 
-
         ctx.fillStyle =
             gradiente;
 
-
         ctx.beginPath();
-
 
         ctx.moveTo(
             puntos[0].x,
@@ -3268,17 +2829,14 @@ function dibujarGraficaProgreso() {
                 margenInferior
         );
 
-
         puntos.forEach(
             (punto) => {
-
                 ctx.lineTo(
                     punto.x,
                     punto.y
                 );
             }
         );
-
 
         ctx.lineTo(
             puntos[
@@ -3289,17 +2847,10 @@ function dibujarGraficaProgreso() {
                 margenInferior
         );
 
-
         ctx.closePath();
-
 
         ctx.fill();
     }
-
-
-    /* =========================
-       LÍNEA PRINCIPAL
-    ========================= */
 
     ctx.strokeStyle =
         "#4dabf7";
@@ -3313,26 +2864,18 @@ function dibujarGraficaProgreso() {
     ctx.lineCap =
         "round";
 
-
     ctx.beginPath();
-
 
     puntos.forEach(
         (punto, indice) => {
-
             if (
                 indice === 0
             ) {
-
                 ctx.moveTo(
                     punto.x,
                     punto.y
                 );
-
-            }
-
-            else {
-
+            } else {
                 ctx.lineTo(
                     punto.x,
                     punto.y
@@ -3341,29 +2884,17 @@ function dibujarGraficaProgreso() {
         }
     );
 
-
     ctx.stroke();
-
-
-    /* =========================
-       PUNTOS + VALORES + FECHAS
-    ========================= */
 
     puntos.forEach(
         (punto, indice) => {
-
             const dato =
                 datos[indice];
-
-
-            /* Halo */
 
             ctx.fillStyle =
                 "rgba(77,171,247,0.18)";
 
-
             ctx.beginPath();
-
 
             ctx.arc(
                 punto.x,
@@ -3373,18 +2904,12 @@ function dibujarGraficaProgreso() {
                 Math.PI * 2
             );
 
-
             ctx.fill();
-
-
-            /* Punto */
 
             ctx.fillStyle =
                 "#111";
 
-
             ctx.beginPath();
-
 
             ctx.arc(
                 punto.x,
@@ -3394,20 +2919,15 @@ function dibujarGraficaProgreso() {
                 Math.PI * 2
             );
 
-
             ctx.fill();
-
 
             ctx.strokeStyle =
                 "#4dabf7";
 
-
             ctx.lineWidth =
                 3;
 
-
             ctx.beginPath();
-
 
             ctx.arc(
                 punto.x,
@@ -3417,23 +2937,16 @@ function dibujarGraficaProgreso() {
                 Math.PI * 2
             );
 
-
             ctx.stroke();
-
-
-            /* Valor */
 
             ctx.fillStyle =
                 "#fff";
 
-
             ctx.font =
                 "bold 12px Arial";
 
-
             ctx.textAlign =
                 "center";
-
 
             ctx.fillText(
                 `${formatearNumeroGrafica(
@@ -3443,14 +2956,10 @@ function dibujarGraficaProgreso() {
                 punto.y - 16
             );
 
-
-            /* Fecha */
-
             const fecha =
                 new Date(
                     dato.fecha
                 );
-
 
             const fechaTexto =
                 fecha.toLocaleDateString(
@@ -3464,14 +2973,11 @@ function dibujarGraficaProgreso() {
                     }
                 );
 
-
             ctx.fillStyle =
                 "#888";
 
-
             ctx.font =
                 "12px Arial";
-
 
             ctx.fillText(
                 fechaTexto,
@@ -3483,22 +2989,14 @@ function dibujarGraficaProgreso() {
         }
     );
 
-
-    /* =========================
-       TEXTO INFERIOR
-    ========================= */
-
     ctx.fillStyle =
         "#666";
-
 
     ctx.font =
         "12px Arial";
 
-
     ctx.textAlign =
         "center";
-
 
     ctx.fillText(
         "Evolución de tu rendimiento",
@@ -3513,12 +3011,10 @@ function dibujarGraficaProgreso() {
 ========================= */
 
 function mostrarEditorRutinas() {
-
     const contenido =
         document.getElementById(
             "contenido"
         );
-
 
     let html = `
         <h2>
@@ -3568,10 +3064,8 @@ function mostrarEditorRutinas() {
         <div id="editor-contenido"></div>
     `;
 
-
     contenido.innerHTML =
         html;
-
 
     cargarEditorDia();
 }
@@ -3582,18 +3076,15 @@ function mostrarEditorRutinas() {
 ========================= */
 
 function cargarEditorDia() {
-
     const selector =
         document.getElementById(
             "editor-dia"
         );
 
-
     const editor =
         document.getElementById(
             "editor-contenido"
         );
-
 
     if (
         !selector ||
@@ -3602,16 +3093,13 @@ function cargarEditorDia() {
         return;
     }
 
-
     const dia =
         parseInt(
             selector.value
         );
 
-
     const rutina =
         rutinas[dia];
-
 
     let html = `
         <div
@@ -3639,10 +3127,8 @@ function cargarEditorDia() {
         </div>
     `;
 
-
     rutina.ejercicios.forEach(
         (ejercicio, indice) => {
-
             html +=
                 crearEditorEjercicioHTML(
                     ejercicio,
@@ -3650,7 +3136,6 @@ function cargarEditorDia() {
                 );
         }
     );
-
 
     html += `
         <button
@@ -3670,7 +3155,6 @@ function cargarEditorDia() {
         </button>
     `;
 
-
     editor.innerHTML =
         html;
 }
@@ -3684,7 +3168,6 @@ function crearEditorEjercicioHTML(
     ejercicio,
     indice
 ) {
-
     return `
         <div
             class="editor-ejercicio"
@@ -3718,7 +3201,6 @@ function crearEditorEjercicioHTML(
 
             </div>
 
-
             <label class="editor-opcional">
 
                 <input
@@ -3745,32 +3227,20 @@ function crearEditorEjercicioHTML(
 ========================= */
 
 function anadirEjercicioEditor() {
-
     const editor =
         document.getElementById(
             "editor-contenido"
         );
-
 
     const ejercicios =
         editor.querySelectorAll(
             ".editor-ejercicio"
         );
 
-
-    /*
-     * El primer editor-ejercicio
-     * corresponde al nombre de la
-     * rutina, por lo que contamos
-     * solamente los que contienen
-     * nombre de ejercicio.
-     */
     const indice =
         ejercicios.length;
 
-
     const nuevoEjercicio = {
-
         nombre:
             "Nuevo ejercicio",
 
@@ -3781,7 +3251,6 @@ function anadirEjercicioEditor() {
             false
     };
 
-
     editor.insertAdjacentHTML(
         "beforeend",
         crearEditorEjercicioHTML(
@@ -3790,23 +3259,15 @@ function anadirEjercicioEditor() {
         )
     );
 
-
-    /*
-     * El botón de guardar queda
-     * al final, así que lo movemos
-     * después del nuevo ejercicio.
-     */
     const botonAnadir =
         editor.querySelector(
             ".boton-anadir-ejercicio"
         );
 
-
     const botonGuardar =
         editor.querySelector(
             ".boton-guardar-rutina"
         );
-
 
     editor.insertBefore(
         botonAnadir,
@@ -3822,17 +3283,14 @@ function anadirEjercicioEditor() {
 function eliminarEjercicioEditor(
     boton
 ) {
-
     const ejercicio =
         boton.closest(
             ".editor-ejercicio"
         );
 
-
     if (!ejercicio) {
         return;
     }
-
 
     ejercicio.remove();
 }
@@ -3843,18 +3301,15 @@ function eliminarEjercicioEditor(
 ========================= */
 
 function guardarRutinaEditada() {
-
     const selector =
         document.getElementById(
             "editor-dia"
         );
 
-
     const editor =
         document.getElementById(
             "editor-contenido"
         );
-
 
     if (
         !selector ||
@@ -3863,23 +3318,19 @@ function guardarRutinaEditada() {
         return;
     }
 
-
     const dia =
         parseInt(
             selector.value
         );
-
 
     const nombreRutina =
         document.getElementById(
             "editor-nombre-rutina"
         ).value.trim();
 
-
     if (
         nombreRutina === ""
     ) {
-
         alert(
             "El nombre de la rutina no puede estar vacío."
         );
@@ -3887,25 +3338,20 @@ function guardarRutinaEditada() {
         return;
     }
 
-
     const elementosEjercicio =
         editor.querySelectorAll(
             ".editor-ejercicio[data-indice]"
         );
 
-
     const ejercicios = [];
-
 
     for (
         let i = 0;
         i < elementosEjercicio.length;
         i++
     ) {
-
         const elemento =
             elementosEjercicio[i];
-
 
         const nombre =
             elemento
@@ -3914,7 +3360,6 @@ function guardarRutinaEditada() {
                 )
                 .value
                 .trim();
-
 
         const series =
             parseInt(
@@ -3925,7 +3370,6 @@ function guardarRutinaEditada() {
                     .value
             );
 
-
         const opcional =
             elemento
                 .querySelector(
@@ -3933,11 +3377,9 @@ function guardarRutinaEditada() {
                 )
                 .checked;
 
-
         if (
             nombre === ""
         ) {
-
             alert(
                 "Todos los ejercicios deben tener nombre."
             );
@@ -3945,12 +3387,10 @@ function guardarRutinaEditada() {
             return;
         }
 
-
         if (
             isNaN(series) ||
             series < 1
         ) {
-
             alert(
                 "El número de series debe ser como mínimo 1."
             );
@@ -3958,9 +3398,7 @@ function guardarRutinaEditada() {
             return;
         }
 
-
         ejercicios.push({
-
             nombre:
                 nombre,
 
@@ -3976,16 +3414,13 @@ function guardarRutinaEditada() {
         });
     }
 
-
     rutinas[dia] = {
-
         nombre:
             nombreRutina,
 
         ejercicios:
             ejercicios
     };
-
 
     localStorage.setItem(
         "gymTrackerRutinas",
@@ -3994,11 +3429,9 @@ function guardarRutinaEditada() {
         )
     );
 
-
     alert(
         "Rutina guardada correctamente."
     );
-
 
     mostrarEditorRutinas();
 }
@@ -4011,17 +3444,14 @@ function guardarRutinaEditada() {
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-
         const botonHistorial =
             document.getElementById(
                 "boton-historial"
             );
 
-
         if (
             botonHistorial
         ) {
-
             botonHistorial.addEventListener(
                 "click",
                 mostrarHistorial
