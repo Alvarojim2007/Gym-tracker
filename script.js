@@ -83,7 +83,9 @@ function cargarRutinas() {
         localStorage.getItem("gymTrackerRutinas");
 
     if (guardadas) {
+
         return JSON.parse(guardadas);
+
     }
 
     return JSON.parse(
@@ -153,6 +155,10 @@ function mostrarDia(dia) {
                     </h3>
             `;
 
+
+            /* =========================
+               ÚLTIMO ENTRENAMIENTO
+            ========================= */
 
             if (ultimoEntrenamiento) {
 
@@ -336,12 +342,15 @@ function anadirSerie(indiceEjercicio) {
         );
 
     const numeroNuevaSerie =
-        contenedor.querySelectorAll(".serie").length + 1;
+        contenedor.querySelectorAll(".serie")
+            .length + 1;
 
 
     contenedor.insertAdjacentHTML(
         "beforeend",
-        crearSerieHTML(numeroNuevaSerie)
+        crearSerieHTML(
+            numeroNuevaSerie
+        )
     );
 }
 
@@ -372,6 +381,7 @@ function obtenerUltimoEntrenamientoEjercicio(
                 ) {
                     return false;
                 }
+
 
                 return entrenamiento.ejercicios.some(
                     (ejercicio) =>
@@ -463,7 +473,9 @@ function guardarEntrenamiento(dia) {
 
             const pesos =
                 ejercicioElemento
-                    .querySelectorAll(".peso");
+                    .querySelectorAll(
+                        ".peso"
+                    );
 
 
             const repeticiones =
@@ -522,7 +534,9 @@ function guardarEntrenamiento(dia) {
 
     localStorage.setItem(
         "gymTrackerHistorial",
-        JSON.stringify(historial)
+        JSON.stringify(
+            historial
+        )
     );
 
 
@@ -1177,7 +1191,8 @@ function mostrarResultadoComparacion() {
 
                         const repeticionesAnterior =
                             parseFloat(
-                                serieAnterior.repeticiones
+                                serieAnterior
+                                    .repeticiones
                             );
 
 
@@ -1362,6 +1377,12 @@ function mostrarResultadoComparacion() {
             }
 
 
+            /*
+             * Guardamos las series actuales
+             * para compararlas con las
+             * mismas series del próximo
+             * entrenamiento.
+             */
             seriesAnteriores =
                 ejercicio.series.map(
                     (serie) => ({
@@ -1408,7 +1429,8 @@ function mostrarResultadoComparacion() {
     else {
 
         html += `
-            <div class="mejores-marcas">
+            <div
+                class="mejores-marcas">
 
                 <h3>
                     Mejores marcas
@@ -1453,14 +1475,12 @@ function mostrarGraficas() {
             "contenido"
         );
 
-
     const historial =
         JSON.parse(
             localStorage.getItem(
                 "gymTrackerHistorial"
             )
         ) || [];
-
 
     if (
         historial.length === 0
@@ -1587,40 +1607,52 @@ function mostrarGraficas() {
 
         </select>
 
+
         <div
             id="resumen-grafica"
             style="
                 margin-top:20px;
                 display:grid;
-                grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+                grid-template-columns:repeat(4,minmax(0,1fr));
                 gap:10px;
             ">
         </div>
 
+
         <div
             style="
-                width:100%;
                 margin-top:25px;
-                overflow:hidden;
                 background:#111;
-                border-radius:10px;
-                padding:15px;
-                box-sizing:border-box;
+                border:1px solid #292929;
+                border-radius:12px;
+                padding:18px;
+                overflow:hidden;
             ">
 
             <canvas
                 id="grafica-progreso"
-                width="1000"
-                height="500"
+                width="1100"
+                height="560"
                 style="
                     width:100%;
-                    max-width:1000px;
                     height:auto;
                     display:block;
-                    margin:auto;
                 ">
             </canvas>
 
+        </div>
+
+
+        <div
+            id="detalle-grafica"
+            style="
+                margin-top:15px;
+                background:#151515;
+                border-radius:10px;
+                padding:15px;
+                color:#aaa;
+                font-size:14px;
+            ">
         </div>
     `;
 
@@ -1635,7 +1667,6 @@ function mostrarGraficas() {
 
 /* =========================
    ACTUALIZAR EJERCICIOS
-   DE LA GRÁFICA
 ========================= */
 
 function actualizarEjerciciosGrafica() {
@@ -1645,12 +1676,10 @@ function actualizarEjerciciosGrafica() {
             "grafica-dia"
         );
 
-
     const selectorEjercicio =
         document.getElementById(
             "grafica-ejercicio"
         );
-
 
     if (
         !selectorDia ||
@@ -1700,6 +1729,7 @@ function actualizarEjerciciosGrafica() {
                             ejercicio.nombre
                         );
                     }
+
                 }
             );
         }
@@ -1718,14 +1748,11 @@ function actualizarEjerciciosGrafica() {
                     "option"
                 );
 
-
             opcion.value =
                 nombre;
 
-
             opcion.textContent =
                 nombre;
-
 
             selectorEjercicio.appendChild(
                 opcion
@@ -1756,18 +1783,17 @@ function obtenerDatosGrafica(
         ) || [];
 
 
-    let entrenamientos =
-        historial.filter(
-            (entrenamiento) =>
-                entrenamiento.dia === dia
-        );
-
-
-    entrenamientos.sort(
-        (a, b) =>
-            new Date(a.fecha) -
-            new Date(b.fecha)
-    );
+    const entrenamientos =
+        historial
+            .filter(
+                (entrenamiento) =>
+                    entrenamiento.dia === dia
+            )
+            .sort(
+                (a, b) =>
+                    new Date(a.fecha) -
+                    new Date(b.fecha)
+            );
 
 
     const datos = [];
@@ -1806,7 +1832,9 @@ function obtenerDatosGrafica(
                         )
                         .filter(
                             (peso) =>
-                                !isNaN(peso)
+                                !isNaN(
+                                    peso
+                                )
                         );
 
 
@@ -1843,8 +1871,12 @@ function obtenerDatosGrafica(
 
 
                         if (
-                            !isNaN(peso) &&
-                            !isNaN(repeticiones)
+                            !isNaN(
+                                peso
+                            ) &&
+                            !isNaN(
+                                repeticiones
+                            )
                         ) {
 
                             valor +=
@@ -1864,8 +1896,7 @@ function obtenerDatosGrafica(
 
 
             else if (
-                metrica ===
-                "repeticiones"
+                metrica === "repeticiones"
             ) {
 
                 ejercicio.series.forEach(
@@ -1878,7 +1909,9 @@ function obtenerDatosGrafica(
 
 
                         if (
-                            !isNaN(repeticiones)
+                            !isNaN(
+                                repeticiones
+                            )
                         ) {
 
                             valor +=
@@ -1903,6 +1936,7 @@ function obtenerDatosGrafica(
 
                 valor:
                     valor
+
             });
         }
     );
@@ -1913,7 +1947,33 @@ function obtenerDatosGrafica(
 
 
 /* =========================
-   CALCULAR ESCALA BONITA
+   FORMATEAR NÚMERO
+========================= */
+
+function formatearNumeroGrafica(
+    valor
+) {
+
+    if (
+        Number.isInteger(
+            valor
+        )
+    ) {
+
+        return String(
+            valor
+        );
+    }
+
+
+    return valor.toFixed(
+        1
+    );
+}
+
+
+/* =========================
+   CALCULAR ESCALA
 ========================= */
 
 function calcularEscalaGrafica(
@@ -1921,55 +1981,76 @@ function calcularEscalaGrafica(
     maximo
 ) {
 
-    let rango =
-        maximo - minimo;
+    if (
+        minimo === maximo
+    ) {
+
+        const margen =
+            Math.max(
+                Math.abs(
+                    maximo
+                ) * 0.15,
+                1
+            );
+
+
+        return {
+
+            minimo:
+                Math.max(
+                    0,
+                    minimo -
+                        margen
+                ),
+
+            maximo:
+                maximo +
+                margen
+
+        };
+    }
+
+
+    const rango =
+        maximo -
+        minimo;
+
+
+    const margen =
+        rango *
+        0.12;
+
+
+    let escalaMinima =
+        minimo -
+        margen;
+
+
+    let escalaMaxima =
+        maximo +
+        margen;
 
 
     if (
-        rango === 0
+        minimo >= 0
     ) {
 
-        rango =
+        escalaMinima =
             Math.max(
-                Math.abs(maximo) * 0.2,
-                1
+                0,
+                escalaMinima
             );
     }
 
 
-    const margen =
-        rango * 0.15;
-
-
-    let minimoEscala =
-        minimo - margen;
-
-
-    let maximoEscala =
-        maximo + margen;
-
-
-    /*
-     * Evitamos que el eje inferior
-     * quede en valores negativos
-     * cuando trabajamos con pesos,
-     * volumen o repeticiones.
-     */
-    if (
-        minimo >= 0 &&
-        minimoEscala < 0
-    ) {
-
-        minimoEscala = 0;
-    }
-
-
     return {
+
         minimo:
-            minimoEscala,
+            escalaMinima,
 
         maximo:
-            maximoEscala
+            escalaMaxima
+
     };
 }
 
@@ -1985,28 +2066,29 @@ function dibujarGraficaProgreso() {
             "grafica-dia"
         );
 
-
     const selectorEjercicio =
         document.getElementById(
             "grafica-ejercicio"
         );
-
 
     const selectorMetrica =
         document.getElementById(
             "grafica-metrica"
         );
 
-
     const canvas =
         document.getElementById(
             "grafica-progreso"
         );
 
-
     const resumen =
         document.getElementById(
             "resumen-grafica"
+        );
+
+    const detalle =
+        document.getElementById(
+            "detalle-grafica"
         );
 
 
@@ -2061,40 +2143,39 @@ function dibujarGraficaProgreso() {
     ) {
 
         resumen.innerHTML = `
-            <div>
+            <div
+                style="
+                    grid-column:1/-1;
+                    background:#151515;
+                    padding:20px;
+                    border-radius:10px;
+                    text-align:center;
+                ">
+
                 No hay suficientes datos
                 para mostrar esta gráfica.
+
             </div>
         `;
+
+
+        if (
+            detalle
+        ) {
+            detalle.innerHTML =
+                "";
+        }
+
 
         return;
     }
 
 
-    let unidad = "";
+    let tituloMetrica =
+        "";
 
-
-    if (
-        metrica === "peso"
-    ) {
-
-        unidad = "kg";
-
-    }
-    else if (
-        metrica === "volumen"
-    ) {
-
-        unidad = "kg";
-
-    }
-    else {
-
-        unidad = "reps";
-    }
-
-
-    let tituloMetrica = "";
+    let unidad =
+        "";
 
 
     if (
@@ -2104,7 +2185,11 @@ function dibujarGraficaProgreso() {
         tituloMetrica =
             "Peso máximo";
 
+        unidad =
+            "kg";
+
     }
+
     else if (
         metrica === "volumen"
     ) {
@@ -2112,11 +2197,18 @@ function dibujarGraficaProgreso() {
         tituloMetrica =
             "Volumen total";
 
+        unidad =
+            "kg";
+
     }
+
     else {
 
         tituloMetrica =
             "Repeticiones totales";
+
+        unidad =
+            "reps";
     }
 
 
@@ -2124,6 +2216,23 @@ function dibujarGraficaProgreso() {
         datos.map(
             (dato) =>
                 dato.valor
+        );
+
+
+    const primero =
+        valores[0];
+
+
+    const actual =
+        valores[
+            valores.length -
+            1
+        ];
+
+
+    const mejor =
+        Math.max(
+            ...valores
         );
 
 
@@ -2139,23 +2248,8 @@ function dibujarGraficaProgreso() {
         );
 
 
-    const ultimo =
-        valores[
-            valores.length - 1
-        ];
-
-
-    const primero =
-        valores[0];
-
-
-    const mejor =
-        Math.max(
-            ...valores
-        );
-
-
-    let cambio = 0;
+    let cambio =
+        0;
 
 
     if (
@@ -2164,37 +2258,69 @@ function dibujarGraficaProgreso() {
 
         cambio =
             (
-                (ultimo - primero) /
+                (
+                    actual -
+                    primero
+                ) /
                 primero
-            ) * 100;
+            ) *
+            100;
     }
 
 
-    /* =========================
-       RESUMEN
-    ========================= */
+    let claseCambio =
+        "";
+
+
+    if (
+        cambio > 0
+    ) {
+
+        claseCambio =
+            "subida";
+
+    }
+
+    else if (
+        cambio < 0
+    ) {
+
+        claseCambio =
+            "bajada";
+    }
+
 
     resumen.innerHTML = `
 
         <div
             style="
                 background:#151515;
-                padding:15px;
-                border-radius:8px;
+                padding:14px;
+                border-radius:10px;
                 text-align:center;
+                border:1px solid #292929;
             ">
 
-            <strong>
+            <div
+                style="
+                    color:#999;
+                    font-size:13px;
+                ">
+
                 Inicial
-            </strong>
+
+            </div>
 
             <div
                 style="
-                    font-size:22px;
+                    font-size:21px;
                     margin-top:5px;
+                    font-weight:bold;
                 ">
 
-                ${primero}
+                ${formatearNumeroGrafica(
+                    primero
+                )}
                 ${unidad}
 
             </div>
@@ -2205,22 +2331,32 @@ function dibujarGraficaProgreso() {
         <div
             style="
                 background:#151515;
-                padding:15px;
-                border-radius:8px;
+                padding:14px;
+                border-radius:10px;
                 text-align:center;
+                border:1px solid #292929;
             ">
 
-            <strong>
+            <div
+                style="
+                    color:#999;
+                    font-size:13px;
+                ">
+
                 Actual
-            </strong>
+
+            </div>
 
             <div
                 style="
-                    font-size:22px;
+                    font-size:21px;
                     margin-top:5px;
+                    font-weight:bold;
                 ">
 
-                ${ultimo}
+                ${formatearNumeroGrafica(
+                    actual
+                )}
                 ${unidad}
 
             </div>
@@ -2231,22 +2367,32 @@ function dibujarGraficaProgreso() {
         <div
             style="
                 background:#151515;
-                padding:15px;
-                border-radius:8px;
+                padding:14px;
+                border-radius:10px;
                 text-align:center;
+                border:1px solid #292929;
             ">
 
-            <strong>
+            <div
+                style="
+                    color:#999;
+                    font-size:13px;
+                ">
+
                 Mejor
-            </strong>
+
+            </div>
 
             <div
                 style="
-                    font-size:22px;
+                    font-size:21px;
                     margin-top:5px;
+                    font-weight:bold;
                 ">
 
-                ${mejor}
+                ${formatearNumeroGrafica(
+                    mejor
+                )}
                 ${unidad}
 
             </div>
@@ -2257,26 +2403,37 @@ function dibujarGraficaProgreso() {
         <div
             style="
                 background:#151515;
-                padding:15px;
-                border-radius:8px;
+                padding:14px;
+                border-radius:10px;
                 text-align:center;
+                border:1px solid #292929;
             ">
-
-            <strong>
-                Cambio
-            </strong>
 
             <div
                 style="
-                    font-size:22px;
+                    color:#999;
+                    font-size:13px;
+                ">
+
+                Cambio
+
+            </div>
+
+            <div
+                class="${claseCambio}"
+                style="
+                    font-size:21px;
                     margin-top:5px;
+                    font-weight:bold;
                 ">
 
                 ${
                     cambio > 0
                         ? "+"
                         : ""
-                }${cambio.toFixed(1)}%
+                }${cambio.toFixed(
+                    1
+                )}%
 
             </div>
 
@@ -2284,28 +2441,85 @@ function dibujarGraficaProgreso() {
     `;
 
 
-    /* =========================
-       DIMENSIONES
-    ========================= */
+    if (
+        detalle
+    ) {
+
+        detalle.innerHTML = `
+
+            <strong
+                style="
+                    color:#fff;
+                ">
+
+                ${datos.length}
+
+                ${
+                    datos.length === 1
+                        ? "entrenamiento"
+                        : "entrenamientos"
+                }
+
+            </strong>
+
+            · Desde
+
+            ${new Date(
+                datos[0].fecha
+            ).toLocaleDateString(
+                "es-ES"
+            )}
+
+            hasta
+
+            ${new Date(
+                datos[
+                    datos.length -
+                    1
+                ].fecha
+            ).toLocaleDateString(
+                "es-ES"
+            )}
+
+            · Rango:
+
+            ${formatearNumeroGrafica(
+                minimo
+            )}
+
+            –
+
+            ${formatearNumeroGrafica(
+                maximo
+            )}
+
+            ${unidad}
+        `;
+    }
+
 
     const ancho =
         canvas.width;
+
 
     const alto =
         canvas.height;
 
 
     const margenIzquierdo =
-        75;
+        82;
+
 
     const margenDerecho =
         35;
 
+
     const margenSuperior =
-        55;
+        70;
+
 
     const margenInferior =
-        80;
+        85;
 
 
     const anchoGrafica =
@@ -2319,10 +2533,6 @@ function dibujarGraficaProgreso() {
         margenSuperior -
         margenInferior;
 
-
-    /* =========================
-       ESCALA
-    ========================= */
 
     const escala =
         calcularEscalaGrafica(
@@ -2364,10 +2574,10 @@ function dibujarGraficaProgreso() {
     ========================= */
 
     ctx.fillStyle =
-        "#ffffff";
+        "#fff";
 
     ctx.font =
-        "bold 20px Arial";
+        "bold 21px Arial";
 
     ctx.textAlign =
         "center";
@@ -2375,7 +2585,28 @@ function dibujarGraficaProgreso() {
     ctx.fillText(
         `${tituloMetrica} — ${nombreEjercicio}`,
         ancho / 2,
-        28
+        32
+    );
+
+
+    /* =========================
+       SUBTÍTULO
+    ========================= */
+
+    ctx.fillStyle =
+        "#888";
+
+    ctx.font =
+        "13px Arial";
+
+    ctx.fillText(
+        `${datos.length} ${
+            datos.length === 1
+                ? "entrenamiento"
+                : "entrenamientos"
+        }`,
+        ancho / 2,
+        52
     );
 
 
@@ -2384,11 +2615,10 @@ function dibujarGraficaProgreso() {
     ========================= */
 
     ctx.strokeStyle =
-        "#666";
+        "#444";
 
     ctx.lineWidth =
         1;
-
 
     ctx.beginPath();
 
@@ -2447,21 +2677,22 @@ function dibujarGraficaProgreso() {
 
         const valor =
             escalaMaxima -
-            (
-                rango *
-                porcentaje
-            );
+            rango *
+                porcentaje;
 
 
         ctx.strokeStyle =
-            "#292929";
+            "#252525";
+
 
         ctx.beginPath();
+
 
         ctx.moveTo(
             margenIzquierdo,
             y
         );
+
 
         ctx.lineTo(
             ancho -
@@ -2469,37 +2700,20 @@ function dibujarGraficaProgreso() {
             y
         );
 
+
         ctx.stroke();
 
 
         ctx.fillStyle =
-            "#999";
-
-
-        let textoValor;
-
-
-        if (
-            valor >= 100
-        ) {
-
-            textoValor =
-                Math.round(
-                    valor
-                );
-
-        }
-        else {
-
-            textoValor =
-                valor.toFixed(1);
-        }
+            "#888";
 
 
         ctx.fillText(
-            textoValor,
+            formatearNumeroGrafica(
+                valor
+            ),
             margenIzquierdo -
-                10,
+                12,
             y + 4
         );
     }
@@ -2524,9 +2738,11 @@ function dibujarGraficaProgreso() {
 
                 x =
                     margenIzquierdo +
-                    anchoGrafica / 2;
+                    anchoGrafica /
+                        2;
 
             }
+
             else {
 
                 x =
@@ -2555,15 +2771,92 @@ function dibujarGraficaProgreso() {
 
 
             puntos.push({
-                x: x,
-                y: y
+
+                x:
+                    x,
+
+                y:
+                    y
+
             });
         }
     );
 
 
     /* =========================
-       LÍNEA
+       ÁREA BAJO LA LÍNEA
+    ========================= */
+
+    if (
+        puntos.length > 1
+    ) {
+
+        const gradiente =
+            ctx.createLinearGradient(
+                0,
+                margenSuperior,
+                0,
+                alto -
+                    margenInferior
+            );
+
+
+        gradiente.addColorStop(
+            0,
+            "rgba(77,171,247,0.22)"
+        );
+
+
+        gradiente.addColorStop(
+            1,
+            "rgba(77,171,247,0)"
+        );
+
+
+        ctx.fillStyle =
+            gradiente;
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            puntos[0].x,
+            alto -
+                margenInferior
+        );
+
+
+        puntos.forEach(
+            (punto) => {
+
+                ctx.lineTo(
+                    punto.x,
+                    punto.y
+                );
+            }
+        );
+
+
+        ctx.lineTo(
+            puntos[
+                puntos.length -
+                1
+            ].x,
+            alto -
+                margenInferior
+        );
+
+
+        ctx.closePath();
+
+
+        ctx.fill();
+    }
+
+
+    /* =========================
+       LÍNEA PRINCIPAL
     ========================= */
 
     ctx.strokeStyle =
@@ -2571,6 +2864,13 @@ function dibujarGraficaProgreso() {
 
     ctx.lineWidth =
         3;
+
+    ctx.lineJoin =
+        "round";
+
+    ctx.lineCap =
+        "round";
+
 
     ctx.beginPath();
 
@@ -2588,6 +2888,7 @@ function dibujarGraficaProgreso() {
                 );
 
             }
+
             else {
 
                 ctx.lineTo(
@@ -2603,18 +2904,45 @@ function dibujarGraficaProgreso() {
 
 
     /* =========================
-       PUNTOS + ETIQUETAS
+       PUNTOS + VALORES + FECHAS
     ========================= */
 
     puntos.forEach(
         (punto, indice) => {
 
-            /* Punto exterior */
+            const dato =
+                datos[indice];
+
+
+            /* Halo */
 
             ctx.fillStyle =
-                "#ffffff";
+                "rgba(77,171,247,0.18)";
+
 
             ctx.beginPath();
+
+
+            ctx.arc(
+                punto.x,
+                punto.y,
+                10,
+                0,
+                Math.PI * 2
+            );
+
+
+            ctx.fill();
+
+
+            /* Punto */
+
+            ctx.fillStyle =
+                "#111";
+
+
+            ctx.beginPath();
+
 
             ctx.arc(
                 punto.x,
@@ -2624,55 +2952,61 @@ function dibujarGraficaProgreso() {
                 Math.PI * 2
             );
 
+
             ctx.fill();
 
 
-            /* Punto interior */
-
-            ctx.fillStyle =
+            ctx.strokeStyle =
                 "#4dabf7";
 
+
+            ctx.lineWidth =
+                3;
+
+
             ctx.beginPath();
+
 
             ctx.arc(
                 punto.x,
                 punto.y,
-                4,
+                5,
                 0,
                 Math.PI * 2
             );
 
-            ctx.fill();
+
+            ctx.stroke();
 
 
-            /* =========================
-               VALOR DEL PUNTO
-            ========================= */
+            /* Valor */
 
             ctx.fillStyle =
-                "#ffffff";
+                "#fff";
+
 
             ctx.font =
                 "bold 12px Arial";
+
 
             ctx.textAlign =
                 "center";
 
 
             ctx.fillText(
-                `${datos[indice].valor} ${unidad}`,
+                `${formatearNumeroGrafica(
+                    dato.valor
+                )} ${unidad}`,
                 punto.x,
-                punto.y - 12
+                punto.y - 16
             );
 
 
-            /* =========================
-               FECHA
-            ========================= */
+            /* Fecha */
 
             const fecha =
                 new Date(
-                    datos[indice].fecha
+                    dato.fecha
                 );
 
 
@@ -2680,14 +3014,18 @@ function dibujarGraficaProgreso() {
                 fecha.toLocaleDateString(
                     "es-ES",
                     {
-                        day: "2-digit",
-                        month: "2-digit"
+                        day:
+                            "2-digit",
+
+                        month:
+                            "2-digit"
                     }
                 );
 
 
             ctx.fillStyle =
-                "#999";
+                "#888";
+
 
             ctx.font =
                 "12px Arial";
@@ -2705,27 +3043,25 @@ function dibujarGraficaProgreso() {
 
 
     /* =========================
-       NÚMERO DE ENTRENAMIENTOS
+       TEXTO INFERIOR
     ========================= */
 
     ctx.fillStyle =
-        "#777";
+        "#666";
+
 
     ctx.font =
         "12px Arial";
+
 
     ctx.textAlign =
         "center";
 
 
     ctx.fillText(
-        `${datos.length} entrenamiento${
-            datos.length === 1
-                ? ""
-                : "s"
-        }`,
+        "Evolución de tu rendimiento",
         ancho / 2,
-        alto - 15
+        alto - 18
     );
 }
 
@@ -2865,10 +3201,11 @@ function cargarEditorDia() {
     rutina.ejercicios.forEach(
         (ejercicio, indice) => {
 
-            html += crearEditorEjercicioHTML(
-                ejercicio,
-                indice
-            );
+            html +=
+                crearEditorEjercicioHTML(
+                    ejercicio,
+                    indice
+                );
         }
     );
 
@@ -2979,6 +3316,13 @@ function anadirEjercicioEditor() {
         );
 
 
+    /*
+     * El primer editor-ejercicio
+     * corresponde al nombre de la
+     * rutina, por lo que contamos
+     * solamente los que contienen
+     * nombre de ejercicio.
+     */
     const indice =
         ejercicios.length;
 
@@ -3002,6 +3346,29 @@ function anadirEjercicioEditor() {
             nuevoEjercicio,
             indice
         )
+    );
+
+
+    /*
+     * El botón de guardar queda
+     * al final, así que lo movemos
+     * después del nuevo ejercicio.
+     */
+    const botonAnadir =
+        editor.querySelector(
+            ".boton-anadir-ejercicio"
+        );
+
+
+    const botonGuardar =
+        editor.querySelector(
+            ".boton-guardar-rutina"
+        );
+
+
+    editor.insertBefore(
+        botonAnadir,
+        botonGuardar
     );
 }
 
@@ -3159,7 +3526,10 @@ function guardarRutinaEditada() {
                 series,
 
             ...(opcional
-                ? { opcional: true }
+                ? {
+                    opcional:
+                        true
+                }
                 : {})
         });
     }
@@ -3177,7 +3547,9 @@ function guardarRutinaEditada() {
 
     localStorage.setItem(
         "gymTrackerRutinas",
-        JSON.stringify(rutinas)
+        JSON.stringify(
+            rutinas
+        )
     );
 
 
@@ -3204,7 +3576,9 @@ document.addEventListener(
             );
 
 
-        if (botonHistorial) {
+        if (
+            botonHistorial
+        ) {
 
             botonHistorial.addEventListener(
                 "click",
