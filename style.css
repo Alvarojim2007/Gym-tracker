@@ -49,6 +49,18 @@ main {
     cursor: pointer;
 }
 
+#dias button:hover {
+    background: #383838;
+}
+
+#dias button:last-child {
+    background: #444;
+}
+
+#dias button:last-child:hover {
+    background: #555;
+}
+
 #contenido {
     background: #1c1c1c;
     border-radius: 14px;
@@ -57,6 +69,11 @@ main {
 
 #contenido h2 {
     margin-bottom: 25px;
+}
+
+#contenido p {
+    color: #bbb;
+    margin-top: 8px;
 }
 
 .ejercicio {
@@ -116,6 +133,10 @@ main {
     color: white;
     font-size: 16px;
     cursor: pointer;
+}
+
+.guardar:hover {
+    background: #555;
 }
 
 @media (max-width: 600px) {
