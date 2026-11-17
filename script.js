@@ -89,7 +89,7 @@ function mostrarDia(dia) {
         <div class="ejercicios">
     `;
 
-    rutina.ejercicios.forEach((ejercicio) => {
+    rutina.ejercicios.forEach((ejercicio, indice) => {
 
         html += `
             <div class="ejercicio">
@@ -99,35 +99,23 @@ function mostrarDia(dia) {
                     ${ejercicio.opcional ? " (Opcional)" : ""}
                 </h3>
 
-                <div class="series">
+                <div class="series" id="series-${indice}">
         `;
 
         for (let i = 1; i <= ejercicio.series; i++) {
-
-            html += `
-                <div class="serie">
-
-                    <span>Serie ${i}</span>
-
-                    <input
-                        type="number"
-                        step="0.5"
-                        placeholder="Peso (kg)"
-                        class="peso"
-                    >
-
-                    <input
-                        type="number"
-                        placeholder="Repeticiones"
-                        class="repeticiones"
-                    >
-
-                </div>
-            `;
+            html += crearSerieHTML(i);
         }
 
         html += `
                 </div>
+
+                <button
+                    type="button"
+                    class="anadir-serie"
+                    onclick="anadirSerie(${indice})">
+                    + Añadir serie
+                </button>
+
             </div>
         `;
     });
@@ -141,6 +129,47 @@ function mostrarDia(dia) {
     `;
 
     contenido.innerHTML = html;
+}
+
+
+function crearSerieHTML(numero) {
+
+    return `
+        <div class="serie">
+
+            <span>Serie ${numero}</span>
+
+            <input
+                type="number"
+                step="0.5"
+                placeholder="Peso (kg)"
+                class="peso"
+            >
+
+            <input
+                type="number"
+                placeholder="Repeticiones"
+                class="repeticiones"
+            >
+
+        </div>
+    `;
+}
+
+
+function anadirSerie(indiceEjercicio) {
+
+    const contenedor = document.getElementById(
+        `series-${indiceEjercicio}`
+    );
+
+    const numeroNuevaSerie =
+        contenedor.querySelectorAll(".serie").length + 1;
+
+    contenedor.insertAdjacentHTML(
+        "beforeend",
+        crearSerieHTML(numeroNuevaSerie)
+    );
 }
 
 
