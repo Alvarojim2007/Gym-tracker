@@ -89,7 +89,7 @@ function mostrarDia(dia) {
         <div class="ejercicios">
     `;
 
-    rutina.ejercicios.forEach((ejercicio, indice) => {
+    rutina.ejercicios.forEach((ejercicio) => {
 
         html += `
             <div class="ejercicio">
@@ -112,11 +112,13 @@ function mostrarDia(dia) {
                         type="number"
                         step="0.5"
                         placeholder="Peso (kg)"
+                        class="peso"
                     >
 
                     <input
                         type="number"
                         placeholder="Repeticiones"
+                        class="repeticiones"
                     >
                 </div>
             `;
@@ -142,6 +144,47 @@ function mostrarDia(dia) {
 
 
 function guardarEntrenamiento(dia) {
+
+    const contenido = document.getElementById("contenido");
+    const ejercicios = contenido.querySelectorAll(".ejercicio");
+
+    const entrenamiento = {
+        fecha: new Date().toISOString(),
+        dia: dia,
+        ejercicios: []
+    };
+
+    ejercicios.forEach((ejercicioElemento) => {
+
+        const nombre = ejercicioElemento.querySelector("h3").textContent.trim();
+        const pesos = ejercicioElemento.querySelectorAll(".peso");
+        const repeticiones = ejercicioElemento.querySelectorAll(".repeticiones");
+
+        const series = [];
+
+        for (let i = 0; i < pesos.length; i++) {
+
+            series.push({
+                peso: pesos[i].value,
+                repeticiones: repeticiones[i].value
+            });
+        }
+
+        entrenamiento.ejercicios.push({
+            nombre: nombre,
+            series: series
+        });
+    });
+
+    const historial =
+        JSON.parse(localStorage.getItem("gymTrackerHistorial")) || [];
+
+    historial.push(entrenamiento);
+
+    localStorage.setItem(
+        "gymTrackerHistorial",
+        JSON.stringify(historial)
+    );
 
     alert("Entrenamiento guardado correctamente.");
 }
