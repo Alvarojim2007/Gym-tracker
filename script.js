@@ -684,16 +684,23 @@ function mostrarHistorialDia(dia) {
 
 
     const entrenamientosDia =
-        historial.filter(
-            (entrenamiento) =>
-                entrenamiento.dia === dia
-        );
+        historial
+            .map(
+                (entrenamiento, indiceOriginal) => ({
+                    entrenamiento,
+                    indiceOriginal
+                })
+            )
+            .filter(
+                (registro) =>
+                    registro.entrenamiento.dia === dia
+            );
 
 
     entrenamientosDia.sort(
         (a, b) =>
-            new Date(b.fecha) -
-            new Date(a.fecha)
+            new Date(b.entrenamiento.fecha) -
+            new Date(a.entrenamiento.fecha)
     );
 
 
@@ -714,7 +721,10 @@ function mostrarHistorialDia(dia) {
 
 
     entrenamientosDia.forEach(
-        (entrenamiento) => {
+        (registro, indiceEntrenamiento) => {
+
+            const entrenamiento =
+                registro.entrenamiento;
 
             const fecha =
                 new Date(
@@ -787,6 +797,21 @@ function mostrarHistorialDia(dia) {
 
 
             html += `
+                <button
+                    type="button"
+                    class="guardar"
+                    onclick="editarEntrenamiento(
+                        ${dia},
+                        ${indiceEntrenamiento}
+                    )">
+
+                    Editar entrenamiento
+
+                </button>
+            `;
+
+
+            html += `
                 </div>
             `;
         }
@@ -795,6 +820,423 @@ function mostrarHistorialDia(dia) {
 
     contenido.innerHTML =
         html;
+}
+
+
+/* =========================
+   EDITAR ENTRENAMIENTO
+========================= */
+
+function editarEntrenamiento(
+    dia,
+    indiceEntrenamiento
+) {
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem(
+                "gymTrackerHistorial"
+            )
+        ) || [];
+
+
+    const entrenamientosDia =
+        historial
+            .map(
+                (entrenamiento, indiceOriginal) => ({
+                    entrenamiento,
+                    indiceOriginal
+                })
+            )
+            .filter(
+                (registro) =>
+                    registro.entrenamiento.dia === dia
+            )
+            .sort(
+                (a, b) =>
+                    new Date(b.entrenamiento.fecha) -
+                    new Date(a.entrenamiento.fecha)
+            );
+
+
+    const registro =
+        entrenamientosDia[
+            indiceEntrenamiento
+        ];
+
+
+    if (
+        !registro
+    ) {
+        return;
+    }
+
+
+    const entrenamiento =
+        registro.entrenamiento;
+
+
+    const fecha =
+        new Date(
+            entrenamiento.fecha
+        );
+
+
+    let html = `
+        <button
+            class="volver"
+            onclick="mostrarHistorialDia(${dia})">
+
+            ← Volver al entrenamiento
+
+        </button>
+
+        <h2>
+            Editar entrenamiento
+        </h2>
+
+        <p>
+            ${fecha.toLocaleDateString(
+                "es-ES"
+            )}
+
+            ${fecha.toLocaleTimeString(
+                "es-ES",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            )}
+        </p>
+    `;
+
+
+    entrenamiento.ejercicios.forEach(
+        (ejercicio, indiceEjercicio) => {
+
+            html += `
+                <div
+                    class="ejercicio"
+                    data-indice-ejercicio="${indiceEjercicio}">
+
+                    <h3>
+                        ${ejercicio.nombre}
+                    </h3>
+
+                    <div class="series">
+            `;
+
+
+            ejercicio.series.forEach(
+                (serie, indiceSerie) => {
+
+                    html += `
+                        <div class="serie">
+
+                            <span>
+                                Serie ${indiceSerie + 1}
+                            </span>
+
+                            <input
+                                type="number"
+                                step="0.5"
+                                class="peso"
+                                value="${serie.peso || ""}"
+                                placeholder="Peso (kg)"
+                            >
+
+                            <input
+                                type="number"
+                                class="repeticiones"
+                                value="${serie.repeticiones || ""}"
+                                placeholder="Repeticiones"
+                            >
+
+                            <button
+                                type="button"
+                                class="boton-eliminar"
+                                onclick="eliminarSerieEditada(this)">
+
+                                Eliminar
+
+                            </button>
+
+                        </div>
+                    `;
+                }
+            );
+
+
+            html += `
+                    </div>
+
+                    <button
+                        type="button"
+                        class="anadir-serie"
+                        onclick="anadirSerieEditada(this)">
+
+                        + Añadir serie
+
+                    </button>
+
+                </div>
+            `;
+        }
+    );
+
+
+    html += `
+        <button
+            class="guardar"
+            onclick="guardarEntrenamientoEditado(
+                ${dia},
+                ${registro.indiceOriginal}
+            )">
+
+            Guardar cambios
+
+        </button>
+    `;
+
+
+    document.getElementById(
+        "contenido"
+    ).innerHTML =
+        html;
+}
+
+
+function anadirSerieEditada(
+    boton
+) {
+
+    const ejercicio =
+        boton.closest(
+            ".ejercicio"
+        );
+
+
+    const contenedor =
+        ejercicio.querySelector(
+            ".series"
+        );
+
+
+    const numero =
+        contenedor.querySelectorAll(
+            ".serie"
+        ).length + 1;
+
+
+    contenedor.insertAdjacentHTML(
+        "beforeend",
+        `
+            <div class="serie">
+
+                <span>
+                    Serie ${numero}
+                </span>
+
+                <input
+                    type="number"
+                    step="0.5"
+                    class="peso"
+                    value=""
+                    placeholder="Peso (kg)"
+                >
+
+                <input
+                    type="number"
+                    class="repeticiones"
+                    value=""
+                    placeholder="Repeticiones"
+                >
+
+                <button
+                    type="button"
+                    class="boton-eliminar"
+                    onclick="eliminarSerieEditada(this)">
+
+                    Eliminar
+
+                </button>
+
+            </div>
+        `
+    );
+}
+
+
+function eliminarSerieEditada(
+    boton
+) {
+
+    const serie =
+        boton.closest(
+            ".serie"
+        );
+
+
+    if (
+        serie
+    ) {
+        serie.remove();
+    }
+
+
+    const ejercicio =
+        boton.closest(
+            ".ejercicio"
+        );
+
+
+    const contenedor =
+        ejercicio.querySelector(
+            ".series"
+        );
+
+
+    contenedor
+        .querySelectorAll(
+            ".serie"
+        )
+        .forEach(
+            (serieElemento, indice) => {
+
+                serieElemento
+                    .querySelector(
+                        "span"
+                    )
+                    .textContent =
+                        `Serie ${indice + 1}`;
+            }
+        );
+}
+
+
+function guardarEntrenamientoEditado(
+    dia,
+    indiceEntrenamiento
+) {
+
+    const historial =
+        JSON.parse(
+            localStorage.getItem(
+                "gymTrackerHistorial"
+            )
+        ) || [];
+
+
+    if (
+        !historial[
+            indiceEntrenamiento
+        ]
+    ) {
+
+        alert(
+            "No se ha encontrado el entrenamiento."
+        );
+
+        return;
+    }
+
+
+    const elementosEjercicio =
+        document
+            .getElementById(
+                "contenido"
+            )
+            .querySelectorAll(
+                ".ejercicio"
+            );
+
+
+    const ejercicios =
+        [];
+
+
+    elementosEjercicio.forEach(
+        (ejercicioElemento) => {
+
+            const nombre =
+                ejercicioElemento
+                    .querySelector(
+                        "h3"
+                    )
+                    .textContent
+                    .trim();
+
+
+            const pesos =
+                ejercicioElemento.querySelectorAll(
+                    ".peso"
+                );
+
+
+            const repeticiones =
+                ejercicioElemento.querySelectorAll(
+                    ".repeticiones"
+                );
+
+
+            const series =
+                [];
+
+
+            for (
+                let i = 0;
+                i < pesos.length;
+                i++
+            ) {
+
+                series.push({
+                    peso:
+                        pesos[i].value,
+
+                    repeticiones:
+                        repeticiones[i].value
+                });
+            }
+
+
+            if (
+                series.length > 0
+            ) {
+
+                ejercicios.push({
+                    nombre:
+                        nombre,
+
+                    series:
+                        series
+                });
+            }
+        }
+    );
+
+
+    historial[
+        indiceEntrenamiento
+    ].ejercicios =
+        ejercicios;
+
+
+    localStorage.setItem(
+        "gymTrackerHistorial",
+        JSON.stringify(
+            historial
+        )
+    );
+
+
+    alert(
+        "Entrenamiento actualizado correctamente."
+    );
+
+
+    mostrarHistorialDia(
+        dia
+    );
 }
 
 
