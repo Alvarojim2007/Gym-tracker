@@ -1532,8 +1532,8 @@ function mostrarResultadoComparacion() {
 
     entrenamientos.sort(
         (a, b) =>
-            new Date(a.fecha) -
-            new Date(b.fecha)
+            new Date(b.fecha) -
+            new Date(a.fecha)
     );
 
 
