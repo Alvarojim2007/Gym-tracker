@@ -586,9 +586,19 @@ function mostrarResultadoComparacion() {
 
     let html = "";
 
-    let pesoAnterior = null;
     let mejorPeso = 0;
     let mejorVolumen = 0;
+
+    /*
+     * Guardamos las series del entrenamiento anterior.
+     *
+     * La posición del array representa el número de serie:
+     * posición 0 = serie 1
+     * posición 1 = serie 2
+     * posición 2 = serie 3
+     * etc.
+     */
+    let seriesAnteriores = [];
 
     entrenamientos.forEach((entrenamiento) => {
 
@@ -629,15 +639,26 @@ function mostrarResultadoComparacion() {
 
             let clasePeso = "mismo";
 
+            /*
+             * Comparamos esta serie con la MISMA serie
+             * del entrenamiento anterior.
+             */
             if (
-                pesoAnterior !== null &&
-                !isNaN(pesoActual)
+                seriesAnteriores[indice] !== undefined &&
+                !isNaN(pesoActual) &&
+                !isNaN(seriesAnteriores[indice])
             ) {
 
-                if (pesoActual > pesoAnterior) {
+                if (
+                    pesoActual >
+                    seriesAnteriores[indice]
+                ) {
                     clasePeso = "subida";
                 }
-                else if (pesoActual < pesoAnterior) {
+                else if (
+                    pesoActual <
+                    seriesAnteriores[indice]
+                ) {
                     clasePeso = "bajada";
                 }
             }
@@ -683,10 +704,9 @@ function mostrarResultadoComparacion() {
             `;
         });
 
-        if (volumenEntrenamiento > mejorVolumen) {
-            mejorVolumen = volumenEntrenamiento;
-        }
-
+        /*
+         * Actualizamos el mejor peso.
+         */
         const pesosValidos =
             ejercicio.series
                 .map((serie) =>
@@ -704,8 +724,13 @@ function mostrarResultadoComparacion() {
             if (pesoMaximo > mejorPeso) {
                 mejorPeso = pesoMaximo;
             }
+        }
 
-            pesoAnterior = pesoMaximo;
+        /*
+         * Actualizamos el mejor volumen.
+         */
+        if (volumenEntrenamiento > mejorVolumen) {
+            mejorVolumen = volumenEntrenamiento;
         }
 
         html += `
@@ -717,6 +742,21 @@ function mostrarResultadoComparacion() {
                 </div>
             </div>
         `;
+
+        /*
+         * Guardamos los pesos de este entrenamiento
+         * para compararlos con el siguiente.
+         */
+        seriesAnteriores =
+            ejercicio.series.map((serie) => {
+
+                const peso =
+                    parseFloat(serie.peso);
+
+                return isNaN(peso)
+                    ? null
+                    : peso;
+            });
     });
 
     if (html === "") {
