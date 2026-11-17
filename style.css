@@ -92,6 +92,20 @@ main {
     width: 160px;
 }
 
+.anadir-serie {
+    margin-top: 8px;
+    padding: 8px 14px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #333;
+    color: white;
+    cursor: pointer;
+}
+
+.anadir-serie:hover {
+    background: #444;
+}
+
 .guardar {
     width: 100%;
     margin-top: 5px;
@@ -130,17 +144,4 @@ main {
     .serie input {
         width: calc(50% - 5px);
     }
-    .anadir-serie {
-    margin-top: 8px;
-    padding: 8px 14px;
-    border: 1px solid #555;
-    border-radius: 6px;
-    background: #333;
-    color: white;
-    cursor: pointer;
-}
-
-.anadir-serie:hover {
-    background: #444;
-}
 }
