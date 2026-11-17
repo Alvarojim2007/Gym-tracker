@@ -299,3 +299,13 @@ function mostrarHistorial() {
 
     contenido.innerHTML = html;
 }
+
+
+/*
+    Hacemos las funciones accesibles desde los botones
+    del HTML mediante onclick.
+*/
+window.mostrarDia = mostrarDia;
+window.anadirSerie = anadirSerie;
+window.guardarEntrenamiento = guardarEntrenamiento;
+window.mostrarHistorial = mostrarHistorial;
