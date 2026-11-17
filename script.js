@@ -123,7 +123,10 @@ function mostrarDia(dia) {
     html += `
         </div>
 
-        <button class="guardar" onclick="guardarEntrenamiento(${dia})">
+        <button
+            type="button"
+            class="guardar"
+            onclick="guardarEntrenamiento(${dia})">
             Guardar entrenamiento
         </button>
     `;
@@ -191,7 +194,9 @@ function guardarEntrenamiento(dia) {
             .textContent
             .trim();
 
-        const pesos = ejercicioElemento.querySelectorAll(".peso");
+        const pesos =
+            ejercicioElemento.querySelectorAll(".peso");
+
         const repeticiones =
             ejercicioElemento.querySelectorAll(".repeticiones");
 
@@ -212,7 +217,9 @@ function guardarEntrenamiento(dia) {
     });
 
     const historial =
-        JSON.parse(localStorage.getItem("gymTrackerHistorial")) || [];
+        JSON.parse(
+            localStorage.getItem("gymTrackerHistorial")
+        ) || [];
 
     historial.push(entrenamiento);
 
@@ -230,7 +237,9 @@ function mostrarHistorial() {
     const contenido = document.getElementById("contenido");
 
     const historial =
-        JSON.parse(localStorage.getItem("gymTrackerHistorial")) || [];
+        JSON.parse(
+            localStorage.getItem("gymTrackerHistorial")
+        ) || [];
 
     if (historial.length === 0) {
 
@@ -251,13 +260,17 @@ function mostrarHistorial() {
         .reverse()
         .forEach((entrenamiento) => {
 
-            const fecha = new Date(entrenamiento.fecha);
+            const fecha =
+                new Date(entrenamiento.fecha);
+
+            const rutina =
+                rutinas[entrenamiento.dia];
 
             html += `
                 <div class="ejercicio">
 
                     <h3>
-                        Día ${entrenamiento.dia} — ${rutinas[entrenamiento.dia].nombre}
+                        Día ${entrenamiento.dia} — ${rutina.nombre}
                     </h3>
 
                     <p>
@@ -301,11 +314,16 @@ function mostrarHistorial() {
 }
 
 
-/*
-    Hacemos las funciones accesibles desde los botones
-    del HTML mediante onclick.
-*/
-window.mostrarDia = mostrarDia;
-window.anadirSerie = anadirSerie;
-window.guardarEntrenamiento = guardarEntrenamiento;
-window.mostrarHistorial = mostrarHistorial;
+/* Conectar el botón Historial con la función */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const botonHistorial =
+        document.getElementById("boton-historial");
+
+    botonHistorial.addEventListener(
+        "click",
+        mostrarHistorial
+    );
+
+});
